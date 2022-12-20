@@ -30,22 +30,30 @@ def vis(point_cloud, vis_color=None, normal=None):
     vis.destroy_window()
     
 
-class Viser:
-    pcd = o3d.geometry.PointCloud()
-    vis = o3d.visualization.Visualizer()
+class Vis3D:
     
-    def __init__(self, point_cloud) -> None:
-        self.point_cloud = point_cloud
+    def __init__(self, point_cloud: np.ndarray=None) -> None:
+        self.vis = o3d.visualization.Visualizer()
         self.vis.create_window()
-        self.pcd.points = o3d.utility.Vector3dVector(self.point_cloud)
-        self.vis.add_geometry(self.pcd)
+        if point_cloud is not None:
+            self.add_pointCloud(point_cloud)
 
-    def show(self):
-        self.vis.run()
+    def add_pointCloud(self, point_cloud: np.ndarray):
+        # point_cloud should be a numpy array
+        # point_cloud.shape == (n, 3)
+        assert point_cloud is not None
+        assert point_cloud.shape[1] == 3
+        pcd = o3d.geometry.PointCloud()
+        pcd.points = o3d.utility.Vector3dVector(point_cloud)
+        self.vis.add_geometry(pcd)
+
     
     def __del__(self):
         self.vis.destroy_window()
-        
+
+    def show(self):
+        self.vis.run()
+
     def add_color(self, colors: np.ndarray):
         # color should be a numpy array and 
         # match the shape of the corresponding 
@@ -77,7 +85,7 @@ class Viser:
             lines=o3d.utility.Vector2iVector(lines),
         )
         line_set.colors = o3d.utility.Vector3dVector(colors)
-        self.vis.add_geometry(line_set)
+        vis.add_geometry(line_set)
         return self
     
     def add_label(self, labels):
@@ -89,3 +97,4 @@ class Viser:
         label_colors = np.array([random_color[label_mapper[each]] for each in labels])
         self.add_color(label_colors)
         return self
+
