@@ -1,58 +1,34 @@
 import open3d as o3d
 import numpy as np
-
-
-def vis(point_cloud, vis_color=None, normal=None):
-    pcd = o3d.geometry.PointCloud()
-    if vis_color is not None:
-        pcd.colors = o3d.utility.Vector3dVector(vis_color)
-
-    pcd.points = o3d.utility.Vector3dVector(point_cloud)
-
-    vis = o3d.visualization.Visualizer()
-    vis.create_window()
-    vis.add_geometry(pcd)
-    
-    if normal is not None:
-        normal_offset = np.zeros((point_cloud.shape[0] * 2, 3))
-        normal_offset[:point_cloud.shape[0]] = point_cloud
-        normal_offset[point_cloud.shape[0]:] = point_cloud + normal/100
-        lines = [[each, each+point_cloud.shape[0]] for each in range(point_cloud.shape[0])]
-        colors = [[1, 0, 0] for i in range(len(lines))]
-        line_set = o3d.geometry.LineSet(
-            points=o3d.utility.Vector3dVector(normal_offset),
-            lines=o3d.utility.Vector2iVector(lines),
-        )
-        line_set.colors = o3d.utility.Vector3dVector(colors)
-        vis.add_geometry(line_set)
-        
-    vis.run()
-    vis.destroy_window()
     
 
 class Vis3D:
+    """
+        This class can be used to visulize point cloud data.
+        Particularly, it's helpful when debugging code.
+        
+        This is an example code:
+        
+        >>> pointcloud = np.random.random((100, 3))
+        >>> Vis3D(pointcloud).show()
+    """
     
     def __init__(self, point_cloud: np.ndarray=None) -> None:
-        self.vis = o3d.visualization.Visualizer()
-        self.vis.create_window()
-        if point_cloud is not None:
-            self.add_pointCloud(point_cloud)
-
-    def add_pointCloud(self, point_cloud: np.ndarray):
         # point_cloud should be a numpy array
         # point_cloud.shape == (n, 3)
         assert point_cloud is not None
         assert point_cloud.shape[1] == 3
-        pcd = o3d.geometry.PointCloud()
-        pcd.points = o3d.utility.Vector3dVector(point_cloud)
-        self.vis.add_geometry(pcd)
-
+        self.pcd = o3d.geometry.PointCloud()
+        self.point_cloud = point_cloud
+        self.pcd.points = o3d.utility.Vector3dVector(self.point_cloud)
+        # Initialize visulizer
+        self.vis = o3d.visualization.Visualizer()
+        self.vis.create_window()
+        self.vis.add_geometry(self.pcd)
     
-    def __del__(self):
-        self.vis.destroy_window()
-
     def show(self):
         self.vis.run()
+        self.vis.destroy_window()
 
     def add_color(self, colors: np.ndarray):
         # color should be a numpy array and 
@@ -85,7 +61,22 @@ class Vis3D:
             lines=o3d.utility.Vector2iVector(lines),
         )
         line_set.colors = o3d.utility.Vector3dVector(colors)
-        vis.add_geometry(line_set)
+        self.vis.add_geometry(line_set)
+        return self
+    
+    def add_lines(self, starts, ends, color=[1, 0, 0]):
+        # starts & ends should be numpy arrays 
+        # with the same shape
+        assert starts.shape == ends.shape
+        
+        lines = [[each, each+starts.shape[0]] for each in range(starts.shape[0])]
+        colors = [color for i in range(len(lines))]
+        line_set = o3d.geometry.LineSet(
+            points=o3d.utility.Vector3dVector(np.concatenate((starts, ends))),
+            lines=o3d.utility.Vector2iVector(lines),
+        )
+        line_set.colors = o3d.utility.Vector3dVector(colors)
+        self.vis.add_geometry(line_set)
         return self
     
     def add_label(self, labels):
