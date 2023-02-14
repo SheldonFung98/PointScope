@@ -33,17 +33,17 @@ Vis3D(point_cloud).add_color(point_cloud_color).show()
 Visualize point cloud with label
 ```
 Vis3D(point_cloud).add_label(point_cloud_label).show()
-# Vis3D(point_cloud).add_label(point_cloud_label).show()
+# Vis3DWeb(point_cloud).add_label(point_cloud_label).show()
 ```
 
 Visualize point cloud with normal
 ```
 Vis3D(point_cloud).add_normal(point_cloud_normal).show()
-# Vis3D(point_cloud).add_normal(point_cloud_normal).show()
+# Vis3DWeb(point_cloud).add_normal(point_cloud_normal).show()
 ```
 
 Visualize point cloud with color along with normal
 ```
 Vis3D(point_cloud).add_color(point_cloud_color).add_normal(point_cloud_normal).show()
-# Vis3D(point_cloud).add_color(point_cloud_color).add_normal(point_cloud_normal).show()
+# Vis3DWeb(point_cloud).add_color(point_cloud_color).add_normal(point_cloud_normal).show()
 ```
