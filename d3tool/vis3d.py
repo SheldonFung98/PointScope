@@ -1,6 +1,8 @@
 import open3d as o3d
 import numpy as np
-    
+from sklearn.manifold import TSNE
+import copy
+
 
 class Vis3D:
     """
@@ -14,16 +16,14 @@ class Vis3D:
     """
     
     def __init__(self, 
-                 point_cloud: np.ndarray=None, 
+                 point_cloud: np.ndarray=None,
                  show_coor=True, 
-                 bg_color=[0.5, 0.5, 0.5]) -> None:
-        # point_cloud should be a numpy array
-        # point_cloud.shape == (n, 3)
-        assert point_cloud is not None
-        assert point_cloud.shape[1] == 3
+                 bg_color=[0.5, 0.5, 0.5],
+                 vis=None) -> None:
         
         # Initialize visulizer
-        self.vis = o3d.visualization.Visualizer()
+        
+        self.vis = vis if vis is not None else o3d.visualization.Visualizer()
         self.vis.create_window()
         opt = self.vis.get_render_option()
         opt.show_coordinate_frame = show_coor
@@ -31,42 +31,69 @@ class Vis3D:
         
         if point_cloud is not None:
             self.add_pcd(point_cloud)
-    
+
     def show(self):
         self.vis.run()
         self.vis.destroy_window()
         
-    def add_pcd(self, point_cloud: np.ndarray):
-        self.point_cloud = point_cloud
+    def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray=None):
+        """Add a new point cloud to visulize.
+        
+        Note that all the following operations would focus on
+        the added point cloud. An additional argument tsfm can
+        be added to transform the point cloud.
+        
+        Args:
+            point_cloud (np.ndarray): (n, 3)
+            tsfm (np.ndarray): (4, 4) 
+        """
         self.current_pcd = o3d.geometry.PointCloud()
         self.current_pcd.points = o3d.utility.Vector3dVector(point_cloud)
+        if tsfm is not None:
+            self.current_pcd.transform(tsfm)
+        self.current_pcd.estimate_normals()
+            
         self.vis.add_geometry(self.current_pcd)
+        self.point_cloud = np.asarray(self.current_pcd.points)
         return self
 
-    def add_color(self, colors: np.ndarray):
-        # color should be a numpy array and 
-        # match the shape of the corresponding 
-        # point cloud.
-        # i.e. color.shape == (n, 3)
-        assert colors is not None
-        assert colors.shape == self.point_cloud.shape
-        if colors.max() >= 1.0 or colors.min() < 0:
-            colors = np.asarray(colors, dtype=np.float32)
-            colors = (colors - colors.min()) / colors.max()
+    def add_color(self, colors: np.ndarray=None):
+        """Add color to current point cloud.
+        
+        color should match the shape of the current focused 
+        point cloud. Random color will be added to the point
+        cloud if color is not specified.
+
+        Args:
+            color (np.ndarray): (n, 3)
+        """
+        if colors is None:
+            colors = np.zeros_like(self.point_cloud)+np.random.rand(3)
+        else:
+            assert colors.shape == self.point_cloud.shape
+            if colors.max() >= 1.0 or colors.min() < 0:
+                colors = np.asarray(colors, dtype=np.float32)
+                colors = (colors - colors.min()) / colors.max()
         self.current_pcd.colors = o3d.utility.Vector3dVector(colors)
         return self
 
-    def add_normal(self, normals):
-        # normal should be a numpy array and 
-        # match the shape of the corresponding 
-        # point cloud.
-        # i.e. normal.shape == (n, 3)
-        assert normals is not None
-        assert normals.shape == self.point_cloud.shape
+    def add_normal(self, normals: np.ndarray=None, normal_length_ratio: float=0.05):
+        """Add normals to current point cloud.
+        
+        normal should match the shape of the corresponding 
+        point cloud.
 
+        Args:
+            normals (np.ndarray): (n, 3)
+        """
+        if normals is None:
+            self.current_pcd.estimate_normals()
+            normals = np.asarray(self.current_pcd.normals)
+        
+        assert normals.shape == self.point_cloud.shape
         normal_offset = np.zeros((self.point_cloud.shape[0] * 2, 3))
         normal_offset[:self.point_cloud.shape[0]] = self.point_cloud
-        normal_offset[self.point_cloud.shape[0]:] = self.point_cloud + normals/100
+        normal_offset[self.point_cloud.shape[0]:] = self.point_cloud + normals*normal_length_ratio
         lines = [[each, each+self.point_cloud.shape[0]] for each in range(self.point_cloud.shape[0])]
         colors = [[1, 0, 0] for i in range(len(lines))]
         line_set = o3d.geometry.LineSet(
@@ -77,9 +104,19 @@ class Vis3D:
         self.vis.add_geometry(line_set)
         return self
     
-    def add_lines(self, starts, ends, color=[1, 0, 0], colors=None):
-        # starts & ends should be numpy arrays 
-        # with the same shape
+    def add_lines(self, starts: np.ndarray, 
+                        ends: np.ndarray, 
+                        color: list=[1, 0, 0],
+                        colors: np.ndarray=None):
+        """Add arbitrary lines to visulize.
+
+        Args:
+            starts (np.ndarray): (m, 3) 
+            ends (np.ndarray): (m, 3)
+            color (list, optional): (R, G, B). Defaults to [1, 0, 0].
+            colors (np.ndarray, optional): (m, 3). Defaults to None.
+
+        """
         assert starts.shape == ends.shape
         
         lines = [[each, each+starts.shape[0]] for each in range(starts.shape[0])]
@@ -96,7 +133,12 @@ class Vis3D:
         self.vis.add_geometry(line_set)
         return self
     
-    def add_label(self, labels):
+    def add_label(self, labels: np.ndarray):
+        """
+        Args:
+            labels (np.ndarray): (n)
+
+        """
         assert labels is not None
         assert labels.shape[0] == self.point_cloud.shape[0]
         label_uniques = np.unique(labels)
@@ -106,3 +148,22 @@ class Vis3D:
         self.add_color(label_colors)
         return self
 
+    def select_points(self, indices: np.ndarray):
+        
+        labels = np.zeros((self.point_cloud.shape[0]))
+        labels[indices] = 1
+        self.add_label(labels)
+        return self
+        
+
+    def add_feat(self, feat: np.ndarray):
+        """Use T-SNE to visualize feature.
+        
+        Args:
+            feat (np.ndarray): (n, f)
+        """
+        feat_tsne = TSNE(n_components=3, 
+                         learning_rate='auto', 
+                         init='random').fit_transform(feat)
+        self.add_color(feat_tsne)
+        return self
