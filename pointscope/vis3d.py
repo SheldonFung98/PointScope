@@ -1,7 +1,6 @@
 import open3d as o3d
 import numpy as np
 from sklearn.manifold import TSNE
-import copy
 
 
 class Vis3D:

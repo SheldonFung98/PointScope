@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package pointscope;
+
+service PointScope {
+    rpc VisualizationSession(stream VisRequest) returns (stream VisResponse);
+}
+
+message VisRequest {
+    oneof visualization_request {
+        AddPointCloud   add_pcd         = 1;
+        AddColor        add_color       = 2;
+        AddLines        add_lines       = 4;
+    }
+}
+
+message VisResponse {
+    Status status = 1;
+}
+
+message AddPointCloud {
+    Matrix pcd = 1;
+    Matrix tsfm = 2;
+}
+
+message AddColor {
+    Matrix colors = 1;
+}
+
+message AddLines {
+    Matrix starts = 1;
+    Matrix ends = 2;
+    Matrix colors = 3;
+}
+
+message Matrix {
+    repeated float data = 1;
+    repeated int32 shape = 2;
+}
+
+message Status {
+    bool ok = 1;
+}

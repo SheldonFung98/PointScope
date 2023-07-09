@@ -1,9 +1,9 @@
 import open3d as o3d
 import numpy as np
-from d3tool.vis3d_ani import Vis3DAni
+from pointscope.vis3d_ani import Vis3DAni
 from PIL import Image
 import torch
-from d3tool.utils.shapeGen import make_cube
+from pointscope.utils.shapeGen import make_cube
 from pytorch3d.transforms import (quaternion_to_matrix, 
                                   matrix_to_quaternion, 
                                   quaternion_multiply, 

@@ -1,4 +1,4 @@
-from d3tool import Vis3D
+from pointscope import Vis3D
 import open3d as o3d
 import numpy as np
 from PIL import Image

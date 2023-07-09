@@ -1,5 +1,5 @@
 import open3d as o3d
-from d3tool import Vis3D
+from pointscope import Vis3D
 import numpy as np
 import multiprocessing
 

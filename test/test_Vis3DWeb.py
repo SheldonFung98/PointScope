@@ -1,4 +1,4 @@
-from d3tool import Vis3DWeb
+from pointscope import Vis3DWeb
 import numpy as np
 import open3d as o3d
 

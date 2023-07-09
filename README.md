@@ -1,49 +1,32 @@
-# 3DTools
-3D Data Processing Tools Collection 
+# PointScope
+PointScope is a tool aiming to help 3D computer vision researcher to visulize 3D point cloud. With PointScope you can easily visualize point cloud locally or remotely with one-liner style command.
 
 ## Dependencies
 * Numpy 
 * Open3D
+* grpc
 
 ## Installation
 ```
-git clone https://github.com/SheldonVon98/D3Tools.git
-cd D3Tools
+git clone https://github.com/SheldonVon98/PointScope.git
+cd PointScope
 pip3 install -e .
 ```
 
-## Vis3D
-import package
+## Local Visualization with Open3D backend
 ```
-from d3tool import Vis3D
-# from d3tool import Vis3DWeb # Alternatively, you can use web visulizer.
-```
-Define some variables for illustration
-```
+from pointscope import PointScopeO3D
+
 point_cloud = np.random.random((10, 3))
 point_cloud_color = np.random.random((10, 3))
 point_cloud_normal = np.random.random((10, 3))
-```
-Visualize point cloud with color
-```
-Vis3D(point_cloud).add_color(point_cloud_color).show()
-# Vis3DWeb(point_cloud).add_color(point_cloud_color).show()
+
+PointScopeO3D().add_pcd(point_cloud).add_color(point_cloud_color).show() # Visualize point cloud with color
+
+PointScopeO3D().add_pcd(point_cloud).add_label(point_cloud_label).show() # Visualize point cloud with label
+
+PointScopeO3D().add_pcd(point_cloud).add_normal(point_cloud_normal).show() # Visualize point cloud with normal
+
+PointScopeO3D().add_pcd(point_cloud).add_color(point_cloud_color).add_normal(point_cloud_normal).show() # Visualize point cloud with color along with normal
 ```
 
-Visualize point cloud with label
-```
-Vis3D(point_cloud).add_label(point_cloud_label).show()
-# Vis3DWeb(point_cloud).add_label(point_cloud_label).show()
-```
-
-Visualize point cloud with normal
-```
-Vis3D(point_cloud).add_normal(point_cloud_normal).show()
-# Vis3DWeb(point_cloud).add_normal(point_cloud_normal).show()
-```
-
-Visualize point cloud with color along with normal
-```
-Vis3D(point_cloud).add_color(point_cloud_color).add_normal(point_cloud_normal).show()
-# Vis3DWeb(point_cloud).add_color(point_cloud_color).add_normal(point_cloud_normal).show()
-```
