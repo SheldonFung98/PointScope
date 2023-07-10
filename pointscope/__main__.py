@@ -27,6 +27,4 @@ args = parser.parse_args()
 if args.server:
     FORMAT = '[%(levelname)s] %(message)s'
     logging.basicConfig(format=FORMAT, level=logging.INFO)
-    PointScopeServer(ip=args.ip, port=args.port).run(
-        vis_delegate=PointScopeO3D
-    )
+    PointScopeServer(ip=args.ip, port=args.port).run()

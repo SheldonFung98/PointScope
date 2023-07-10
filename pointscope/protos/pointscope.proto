@@ -8,14 +8,24 @@ service PointScope {
 
 message VisRequest {
     oneof visualization_request {
-        AddPointCloud   add_pcd         = 1;
-        AddColor        add_color       = 2;
-        AddLines        add_lines       = 4;
+        VedoInit        vedo_init       = 1;
+        O3DInit         o3d_init        = 2;
+        AddPointCloud   add_pcd         = 3;
+        AddColor        add_color       = 4;
+        AddLines        add_lines       = 5;
     }
 }
 
 message VisResponse {
     Status status = 1;
+}
+
+message VedoInit {
+
+}
+
+message O3DInit {
+    
 }
 
 message AddPointCloud {

@@ -1,5 +1,7 @@
 from pointscope.protos import pointscope_pb2_grpc
 from pointscope.protos import pointscope_pb2
+from .pointscope_o3d import PointScopeO3D
+from .pointscope_vedo import PointScopeVedo
 import logging
 import numpy as np
 import open3d as o3d
@@ -7,9 +9,8 @@ import open3d as o3d
 
 class PointScopeServicer(pointscope_pb2_grpc.PointScopeServicer):
     
-    def __init__(self, vis_delegate) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.PointScopeDelegate = vis_delegate
 
     @staticmethod
     def protoMatrix2np(protoMatrix):
@@ -21,9 +22,13 @@ class PointScopeServicer(pointscope_pb2_grpc.PointScopeServicer):
 
     def VisualizationSession(self, request_iterator, context):
         logging.info("Received visualization session.")
-        psdelegator = self.PointScopeDelegate()
+        psdelegator = None
         for request in request_iterator:
-            if request.HasField("add_pcd"):                
+            if request.HasField("vedo_init"):                
+                psdelegator = PointScopeVedo()
+            elif request.HasField("o3d_init"):                
+                psdelegator = PointScopeO3D()
+            elif request.HasField("add_pcd"):                
                 psdelegator.add_pcd(
                     point_cloud=PointScopeServicer.protoMatrix2np(request.add_pcd.pcd),
                     tsfm=PointScopeServicer.protoMatrix2np(request.add_pcd.tsfm))
@@ -32,7 +37,7 @@ class PointScopeServicer(pointscope_pb2_grpc.PointScopeServicer):
             elif request.HasField("add_lines"):                
                 psdelegator.add_lines(
                     starts=PointScopeServicer.protoMatrix2np(request.add_lines.starts),
-                    ends=PointScopeServicer.protoMatrix2np(request.add_lines.starts),
+                    ends=PointScopeServicer.protoMatrix2np(request.add_lines.ends),
                     colors=PointScopeServicer.protoMatrix2np(request.add_lines.colors))
 
             response = pointscope_pb2.VisResponse(

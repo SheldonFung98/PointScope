@@ -3,7 +3,6 @@ from concurrent import futures
 from pointscope.protos import pointscope_pb2_grpc
 from .pointscope_service import PointScopeServicer
 import logging
-from .pointscope_o3d import PointScopeO3D
 
 
 class PointScopeServer:
@@ -12,10 +11,10 @@ class PointScopeServer:
         self.ip = ip
         self.port = port
 
-    def run(self, vis_delegate=PointScopeO3D):
+    def run(self):
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         pointscope_pb2_grpc.add_PointScopeServicer_to_server(
-            PointScopeServicer(vis_delegate), server)
+            PointScopeServicer(), server)
 
         server.add_insecure_port(f'{self.ip}:{self.port}')
         server.start()

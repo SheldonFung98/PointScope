@@ -38,10 +38,9 @@ class PointScopeO3D(PointScopeScaffold):
             self.current_pcd.transform(tsfm)
         self.current_pcd.estimate_normals()
         self.vis.add_geometry(self.current_pcd)
-        # self.vis.draw({'geometry': self.current_pcd, 'name': 'torus1', 'time': 1},)
         return super().add_pcd(point_cloud, tsfm)
     
-    def add_color(self, colors: np.ndarray = None):
+    def add_color(self, colors: np.ndarray):
         """Add color to current point cloud.
         
         color should match the shape of the current focused 
@@ -56,14 +55,11 @@ class PointScopeO3D(PointScopeScaffold):
             return super().add_color(colors)
 
         point_cloud = np.asarray(self.current_pcd.points)
+        assert colors.shape == point_cloud.shape
         
-        if colors is None:
-            colors = np.zeros_like(point_cloud)+np.random.rand(3)
-        else:
-            assert colors.shape == point_cloud.shape
-            if colors.max() >= 1.0 or colors.min() < 0:
-                colors = np.asarray(colors, dtype=np.float32)
-                colors = (colors - colors.min()) / colors.max()
+        if colors.max() > 1.0:
+            colors = np.asarray(colors, dtype=np.float32) / 255
+            
         self.current_pcd.colors = o3d.utility.Vector3dVector(colors)
         return super().add_color(colors)
     

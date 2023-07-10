@@ -6,20 +6,32 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class VisRequest(_message.Message):
-    __slots__ = ["add_pcd", "add_color", "add_lines"]
+    __slots__ = ["vedo_init", "o3d_init", "add_pcd", "add_color", "add_lines"]
+    VEDO_INIT_FIELD_NUMBER: _ClassVar[int]
+    O3D_INIT_FIELD_NUMBER: _ClassVar[int]
     ADD_PCD_FIELD_NUMBER: _ClassVar[int]
     ADD_COLOR_FIELD_NUMBER: _ClassVar[int]
     ADD_LINES_FIELD_NUMBER: _ClassVar[int]
+    vedo_init: VedoInit
+    o3d_init: O3DInit
     add_pcd: AddPointCloud
     add_color: AddColor
     add_lines: AddLines
-    def __init__(self, add_pcd: _Optional[_Union[AddPointCloud, _Mapping]] = ..., add_color: _Optional[_Union[AddColor, _Mapping]] = ..., add_lines: _Optional[_Union[AddLines, _Mapping]] = ...) -> None: ...
+    def __init__(self, vedo_init: _Optional[_Union[VedoInit, _Mapping]] = ..., o3d_init: _Optional[_Union[O3DInit, _Mapping]] = ..., add_pcd: _Optional[_Union[AddPointCloud, _Mapping]] = ..., add_color: _Optional[_Union[AddColor, _Mapping]] = ..., add_lines: _Optional[_Union[AddLines, _Mapping]] = ...) -> None: ...
 
 class VisResponse(_message.Message):
     __slots__ = ["status"]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     status: Status
     def __init__(self, status: _Optional[_Union[Status, _Mapping]] = ...) -> None: ...
+
+class VedoInit(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
+
+class O3DInit(_message.Message):
+    __slots__ = []
+    def __init__(self) -> None: ...
 
 class AddPointCloud(_message.Message):
     __slots__ = ["pcd", "tsfm"]

@@ -2,3 +2,4 @@ PointScope.egg-info
 __pycache__
 *.gif
 .vscode/
+gen_protos.sh

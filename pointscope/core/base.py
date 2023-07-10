@@ -22,6 +22,7 @@ class PointScopeScaffold:
             tsfm (np.ndarray): (4, 4) 
         """
         self.current_point_cloud_np = point_cloud
+        self.add_color(np.zeros_like(point_cloud)+np.random.rand(3))
         return self
     
     def add_color(self, colors: np.ndarray=None):
