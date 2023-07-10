@@ -14,14 +14,12 @@ It provides:
 
 
 ## Dependencies
-----------------------
 * Numpy 
 * Open3D
 * vedo
 * grpc
 
 ## Installation
-----------------------
 ```
 git clone https://github.com/SheldonVon98/PointScope.git
 cd PointScope
@@ -29,7 +27,6 @@ pip3 install -e .
 ```
 
 ## Usage
-----------------------
 ### Local Visualization with Open3D backend
 ```
 from pointscope import PointScopeO3D
@@ -62,6 +59,4 @@ python3 test/test_pointscope_client.py
 ```
 
 ## Call for Contributions
-----------------------
-
 The PointScope project welcomes your expertise and enthusiasm!
