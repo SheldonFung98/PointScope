@@ -25,7 +25,8 @@ message VedoInit {
 }
 
 message O3DInit {
-    
+    bool show_coor = 1;
+    Matrix bg_color = 2;
 }
 
 message AddPointCloud {

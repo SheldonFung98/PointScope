@@ -30,8 +30,12 @@ class VedoInit(_message.Message):
     def __init__(self) -> None: ...
 
 class O3DInit(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
+    __slots__ = ["show_coor", "bg_color"]
+    SHOW_COOR_FIELD_NUMBER: _ClassVar[int]
+    BG_COLOR_FIELD_NUMBER: _ClassVar[int]
+    show_coor: bool
+    bg_color: Matrix
+    def __init__(self, show_coor: bool = ..., bg_color: _Optional[_Union[Matrix, _Mapping]] = ...) -> None: ...
 
 class AddPointCloud(_message.Message):
     __slots__ = ["pcd", "tsfm"]

@@ -5,7 +5,7 @@ from sklearn.manifold import TSNE
 
 class PointScopeScaffold:
     current_pcd = None
-    current_point_cloud_np = None
+    curr_pcd_np = None
 
     def __init__(self) -> None:
         super().__init__()
@@ -21,7 +21,7 @@ class PointScopeScaffold:
             point_cloud (np.ndarray): (n, 3)
             tsfm (np.ndarray): (4, 4) 
         """
-        self.current_point_cloud_np = point_cloud
+        self.curr_pcd_np = point_cloud
         self.add_color(np.zeros_like(point_cloud)+np.random.rand(3))
         return self
     
@@ -59,14 +59,6 @@ class PointScopeScaffold:
         Args:
             normals (np.ndarray): (n, 3)
         """
-        if normals is None:
-            normals = np.asarray(self.current_pcd.normals)
-        
-        point_cloud = np.asarray(self.current_pcd.points)
-        assert normals.shape == point_cloud.shape
-        start = point_cloud
-        end = point_cloud + normals*normal_length_ratio
-        self.add_lines(start, end, color=[1, 0, 0])
         return self
 
     def add_label(self, labels: np.ndarray):
@@ -75,9 +67,8 @@ class PointScopeScaffold:
             labels (np.ndarray): (n)
 
         """
-        point_cloud = np.asarray(self.current_pcd.points)
         assert labels is not None
-        assert labels.shape[0] == point_cloud.shape[0]
+        assert labels.shape[0] == self.curr_pcd_np.shape[0]
         label_uniques = np.unique(labels)
         label_mapper = dict(zip(label_uniques, range(len(label_uniques))))
         random_color = np.random.random((len(label_uniques), 3))
@@ -86,8 +77,7 @@ class PointScopeScaffold:
         return self
     
     def select_points(self, indices: np.ndarray):
-        point_cloud = np.asarray(self.current_pcd.points)
-        labels = np.zeros((point_cloud.shape[0]))
+        labels = np.zeros((self.curr_pcd_np.shape[0]))
         labels[indices] = 1
         self.add_label(labels)
         return self

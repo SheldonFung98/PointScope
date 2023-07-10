@@ -13,6 +13,9 @@ class PointScopeClient(PointScopeScaffold):
         channel = grpc.insecure_channel(f'{ip}:{port}')
         self.stub = pointscope_pb2_grpc.PointScopeStub(channel)
 
+    def __del__(self):
+        self.request_pool.clear()
+
     @staticmethod
     def np2protoMatrix(numpy_array):
         if numpy_array is None:
@@ -48,10 +51,12 @@ class PointScopeClient(PointScopeScaffold):
         )
         return self
     
-    def o3d(self):
+    def o3d(self, show_coor=True, bg_color=[0.5, 0.5, 0.5],):
         self.append_request(
             pointscope_pb2.VisRequest(
                 o3d_init=pointscope_pb2.O3DInit(
+                    show_coor=show_coor,
+                    bg_color=PointScopeClient.np2protoMatrix(bg_color),
                 )
             )
         )

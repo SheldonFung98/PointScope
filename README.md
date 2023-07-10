@@ -30,9 +30,9 @@ pip3 install -e .
 Initiate some variables for visulization
 ```
 import numpy as np
-point_cloud = np.random.random((10, 3))
-point_cloud_color = np.random.random((10, 3))
-point_cloud_normal = np.random.random((10, 3))
+point_cloud = np.random.random((1000, 3))
+point_cloud_color = np.random.random((1000, 3))
+point_cloud_normal = np.random.random((1000, 3))
 ```
 ### Local Visualization
 ```

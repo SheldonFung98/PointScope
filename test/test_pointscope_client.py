@@ -1,11 +1,11 @@
-from pointscope import PointScopeClient
+from pointscope import PointScopeClient as PSC
 import open3d as o3d
 import numpy as np
 
 torus = np.asarray(o3d.geometry.TriangleMesh.create_torus().vertices)
 sphere = np.asarray(o3d.geometry.TriangleMesh.create_sphere().vertices)
                 
-PointScopeClient()\
+PSC()\
     .o3d()\
     .add_pcd(torus+np.array([0, 0, -1.0])).add_color(np.zeros_like(torus))\
     .add_pcd(sphere)\

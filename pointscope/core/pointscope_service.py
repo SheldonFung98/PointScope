@@ -27,7 +27,9 @@ class PointScopeServicer(pointscope_pb2_grpc.PointScopeServicer):
             if request.HasField("vedo_init"):                
                 psdelegator = PointScopeVedo()
             elif request.HasField("o3d_init"):                
-                psdelegator = PointScopeO3D()
+                psdelegator = PointScopeO3D(
+                    show_coor=request.o3d_init.show_coor,
+                    bg_color=PointScopeServicer.protoMatrix2np(request.o3d_init.bg_color))
             elif request.HasField("add_pcd"):                
                 psdelegator.add_pcd(
                     point_cloud=PointScopeServicer.protoMatrix2np(request.add_pcd.pcd),
