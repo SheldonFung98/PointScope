@@ -5,6 +5,7 @@ from sklearn.manifold import TSNE
 
 class PointScopeScaffold:
     current_pcd = None
+    current_point_cloud_np = None
 
     def __init__(self) -> None:
         super().__init__()
@@ -20,12 +21,13 @@ class PointScopeScaffold:
             point_cloud (np.ndarray): (n, 3)
             tsfm (np.ndarray): (4, 4) 
         """
+        self.current_point_cloud_np = point_cloud
         return self
     
     def add_color(self, colors: np.ndarray=None):
         """Add color to current point cloud.
         
-        color should match the shape of the current focused 
+        color should match the shape of the curren`t focused 
         point cloud. Random color will be added to the point
         cloud if color is not specified.
 
