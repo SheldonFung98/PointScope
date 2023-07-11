@@ -3,6 +3,7 @@ import sys
 from pointscope.core.server import PointScopeServer
 from pointscope.core.pointscope_o3d import PointScopeO3D
 import logging
+import asyncio
 
 
 parser = argparse.ArgumentParser(

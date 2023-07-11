@@ -21,8 +21,10 @@ class PointScopeO3D(PointScopeScaffold):
         opt.background_color = np.asarray(bg_color)
 
     def show(self):
-        self.vis.run()
+        while self.vis.poll_events():
+            self.vis.update_renderer()
         self.vis.destroy_window()
+        return self
 
     def draw_at(self, pos: int):
         logging.warning(f"draw_at is not implemented in {self.__class__.__name__}.")
