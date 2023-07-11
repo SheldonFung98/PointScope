@@ -1,7 +1,7 @@
 import grpc
 from .base import PointScopeScaffold
-from pointscope.protos import pointscope_pb2_grpc
-from pointscope.protos import pointscope_pb2
+from ..protos import pointscope_pb2_grpc
+from ..protos import pointscope_pb2
 import numpy as np
 import logging
 

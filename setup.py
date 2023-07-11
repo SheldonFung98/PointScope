@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import atexit
 import os
 
@@ -19,9 +19,7 @@ setup(
     version='0.1.0',
     author="Sheldon Fung",
     url="https://github.com/SheldonVon98/PointScope",
-    packages=[
-        "pointscope",       
-    ],
+    packages=find_packages(),
     install_requires=[
         'numpy>=1.23.5',
         'open3d>=0.17.0',
