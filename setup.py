@@ -1,23 +1,33 @@
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
+from setuptools.command.develop import develop
+
+
+def generate_protos():
+    from grpc_tools import _protoc_compiler
+    base_path = "pointscope"
+    grpc_gen_path = os.path.join(base_path, "protos")
+    _protoc_compiler.run_main([i.encode() for i in [
+        '', '-I.', '--python_out=.', '--grpc_python_out=.',
+        os.path.join(grpc_gen_path, "pointscope.proto")
+    ]])
 
 
 class CustomBuildCommand(build_py):
     
     def run(self):
-        self.generate_protos()
+        generate_protos()
         build_py.run(self)
 
-    def generate_protos(self):
-        from grpc_tools import _protoc_compiler
-        base_path = "pointscope"
-        grpc_gen_path = os.path.join(base_path, "protos")
-        _protoc_compiler.run_main([i.encode() for i in [
-            '', '-I.', '--python_out=.', '--grpc_python_out=.',
-            os.path.join(grpc_gen_path, "pointscope.proto")
-        ]])
-        
+
+class CustomDevCommand(develop):
+    
+    def run(self):
+        generate_protos()
+        develop.run(self)
+
+
 setup(
     name='PointScope',
     python_requires=">=3",
@@ -37,5 +47,6 @@ setup(
     ],
     cmdclass={
         'build_py': CustomBuildCommand,
+        'develop': CustomDevCommand,
     }
 )
