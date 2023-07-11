@@ -13,6 +13,7 @@ message VisRequest {
         AddPointCloud   add_pcd         = 3;
         AddColor        add_color       = 4;
         AddLines        add_lines       = 5;
+        DrawAt          draw_at         = 6;
     }
 }
 
@@ -21,12 +22,19 @@ message VisResponse {
 }
 
 message VedoInit {
-
+    int32 subplot = 1;
+    Matrix bg_color = 2;
+    string window_name = 3;
 }
 
 message O3DInit {
     bool show_coor = 1;
     Matrix bg_color = 2;
+    string window_name = 3;
+}
+
+message DrawAt{
+    int32 pos = 1;
 }
 
 message AddPointCloud {

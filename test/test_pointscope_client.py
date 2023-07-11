@@ -5,9 +5,16 @@ import numpy as np
 torus = np.asarray(o3d.geometry.TriangleMesh.create_torus().vertices)
 sphere = np.asarray(o3d.geometry.TriangleMesh.create_sphere().vertices)
                 
-PSC()\
-    .o3d()\
+PSC().vedo(subplot=2, bg_color=[0.2, 0.3, 0.3]) \
     .add_pcd(torus+np.array([0, 0, -1.0])).add_color(np.zeros_like(torus))\
+    .add_pcd(sphere)\
+    .add_pcd(np.random.random((30000, 3))+np.array([-0.5, -0.5, 1.0]))\
+    .add_lines(np.random.random((10, 3)), np.random.random((10, 3))) \
+    .show()
+
+PSC().o3d(show_coor=False, bg_color=[0.2, 0.3, 0.3]) \
+    .add_pcd(torus+np.array([0, 0, -1.0])).add_color(np.zeros_like(torus))\
+    .draw_at(1) \
     .add_pcd(sphere)\
     .add_pcd(np.random.random((30000, 3))+np.array([-0.5, -0.5, 1.0]))\
     .add_lines(np.random.random((10, 3)), np.random.random((10, 3))) \

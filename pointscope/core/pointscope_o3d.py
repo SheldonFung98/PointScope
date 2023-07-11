@@ -1,6 +1,7 @@
 from .base import PointScopeScaffold
 import open3d as o3d
 import numpy as np
+import logging
 
 
 class PointScopeO3D(PointScopeScaffold):
@@ -9,10 +10,12 @@ class PointScopeO3D(PointScopeScaffold):
     def __init__(self,
                  show_coor=True, 
                  bg_color=[0.5, 0.5, 0.5],
+                 window_name=None,
                  vis=None) -> None:
         super().__init__()
         self.vis = vis if vis is not None else o3d.visualization.Visualizer()
-        self.vis.create_window()
+        self.vis.create_window(
+            window_name if window_name else self.__class__.__name__)
         opt = self.vis.get_render_option()
         opt.show_coordinate_frame = show_coor
         opt.background_color = np.asarray(bg_color)
@@ -20,6 +23,10 @@ class PointScopeO3D(PointScopeScaffold):
     def show(self):
         self.vis.run()
         self.vis.destroy_window()
+
+    def draw_at(self, pos: int):
+        logging.warning(f"draw_at is not implemented in {self.__class__.__name__}.")
+        return super().draw_at(pos)
 
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
         """Add a new point cloud to visulize.

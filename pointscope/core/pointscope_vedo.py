@@ -5,14 +5,26 @@ from vedo import Points, Spheres, Plotter, Lines
 
 class PointScopeVedo(PointScopeScaffold):
     
-    def __init__(self) -> None:
+    def __init__(self, 
+                window_name=None, 
+                bg_color=[0.5, 0.5, 0.5],
+                subplot=1) -> None:
         super().__init__()
-        self.plt = Plotter()
+        self.plt = Plotter(
+            N=subplot,
+            title=window_name if window_name else self.__class__.__name__,
+            bg=bg_color
+        )
+
         
     def show(self):
-        self.plt.show().close()
+        self.plt.show().interactive().close()
     
-    def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
+    def draw_at(self, pos: int):
+        self.plt.at(pos)
+        return super().draw_at(pos)
+    
+    def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None, at=0):
         self.current_pcd = Spheres(point_cloud, r=0.02)
         self.plt.add(self.current_pcd)
         return super().add_pcd(point_cloud, tsfm)

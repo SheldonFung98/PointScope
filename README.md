@@ -62,18 +62,21 @@ Start PointScope clinet
 ```
 from pointscope import PointScopeClient as PSC
 
+another_pcd = np.random.random((30000, 3))*2+np.array([-0.5, -0.5, 2.0])
+
 # Use Open3D backend
-PSC().o3d() \ 
-    .add_pcd(point_cloud) \
-    .add_pcd(np.random.random((30000, 3))+np.array([1, 0, 0])) \
-    .add_lines(np.random.random((10, 3)), np.random.random((10, 3))) \
+PSC().vedo(subplot=2, bg_color=[0.2, 0.3, 0.3]) \
+    .add_pcd(point_cloud).add_color(np.zeros_like(point_cloud))\
+    .add_pcd(another_pcd)\
+    .add_lines(point_cloud[:20], another_pcd[:20]) \
     .show()
 
 # Use Vedo backend
-PSC().vedo() \
-    .add_pcd(point_cloud) \
-    .add_pcd(np.random.random((30000, 3))+np.array([1, 0, 0])) \
-    .add_lines(np.random.random((10, 3)), np.random.random((10, 3))) \
+PSC().o3d(show_coor=False, bg_color=[0.2, 0.3, 0.3]) \
+    .add_pcd(point_cloud).add_color(np.zeros_like(point_cloud))\
+    .draw_at(1) \
+    .add_pcd(another_pcd)\
+    .add_lines(point_cloud[:20], another_pcd[:20]) \
     .show()
 ```
 

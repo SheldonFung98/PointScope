@@ -6,18 +6,20 @@ from typing import ClassVar as _ClassVar, Iterable as _Iterable, Mapping as _Map
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class VisRequest(_message.Message):
-    __slots__ = ["vedo_init", "o3d_init", "add_pcd", "add_color", "add_lines"]
+    __slots__ = ["vedo_init", "o3d_init", "add_pcd", "add_color", "add_lines", "draw_at"]
     VEDO_INIT_FIELD_NUMBER: _ClassVar[int]
     O3D_INIT_FIELD_NUMBER: _ClassVar[int]
     ADD_PCD_FIELD_NUMBER: _ClassVar[int]
     ADD_COLOR_FIELD_NUMBER: _ClassVar[int]
     ADD_LINES_FIELD_NUMBER: _ClassVar[int]
+    DRAW_AT_FIELD_NUMBER: _ClassVar[int]
     vedo_init: VedoInit
     o3d_init: O3DInit
     add_pcd: AddPointCloud
     add_color: AddColor
     add_lines: AddLines
-    def __init__(self, vedo_init: _Optional[_Union[VedoInit, _Mapping]] = ..., o3d_init: _Optional[_Union[O3DInit, _Mapping]] = ..., add_pcd: _Optional[_Union[AddPointCloud, _Mapping]] = ..., add_color: _Optional[_Union[AddColor, _Mapping]] = ..., add_lines: _Optional[_Union[AddLines, _Mapping]] = ...) -> None: ...
+    draw_at: DrawAt
+    def __init__(self, vedo_init: _Optional[_Union[VedoInit, _Mapping]] = ..., o3d_init: _Optional[_Union[O3DInit, _Mapping]] = ..., add_pcd: _Optional[_Union[AddPointCloud, _Mapping]] = ..., add_color: _Optional[_Union[AddColor, _Mapping]] = ..., add_lines: _Optional[_Union[AddLines, _Mapping]] = ..., draw_at: _Optional[_Union[DrawAt, _Mapping]] = ...) -> None: ...
 
 class VisResponse(_message.Message):
     __slots__ = ["status"]
@@ -26,16 +28,30 @@ class VisResponse(_message.Message):
     def __init__(self, status: _Optional[_Union[Status, _Mapping]] = ...) -> None: ...
 
 class VedoInit(_message.Message):
-    __slots__ = []
-    def __init__(self) -> None: ...
+    __slots__ = ["subplot", "bg_color", "window_name"]
+    SUBPLOT_FIELD_NUMBER: _ClassVar[int]
+    BG_COLOR_FIELD_NUMBER: _ClassVar[int]
+    WINDOW_NAME_FIELD_NUMBER: _ClassVar[int]
+    subplot: int
+    bg_color: Matrix
+    window_name: str
+    def __init__(self, subplot: _Optional[int] = ..., bg_color: _Optional[_Union[Matrix, _Mapping]] = ..., window_name: _Optional[str] = ...) -> None: ...
 
 class O3DInit(_message.Message):
-    __slots__ = ["show_coor", "bg_color"]
+    __slots__ = ["show_coor", "bg_color", "window_name"]
     SHOW_COOR_FIELD_NUMBER: _ClassVar[int]
     BG_COLOR_FIELD_NUMBER: _ClassVar[int]
+    WINDOW_NAME_FIELD_NUMBER: _ClassVar[int]
     show_coor: bool
     bg_color: Matrix
-    def __init__(self, show_coor: bool = ..., bg_color: _Optional[_Union[Matrix, _Mapping]] = ...) -> None: ...
+    window_name: str
+    def __init__(self, show_coor: bool = ..., bg_color: _Optional[_Union[Matrix, _Mapping]] = ..., window_name: _Optional[str] = ...) -> None: ...
+
+class DrawAt(_message.Message):
+    __slots__ = ["pos"]
+    POS_FIELD_NUMBER: _ClassVar[int]
+    pos: int
+    def __init__(self, pos: _Optional[int] = ...) -> None: ...
 
 class AddPointCloud(_message.Message):
     __slots__ = ["pcd", "tsfm"]

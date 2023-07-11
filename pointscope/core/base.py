@@ -61,6 +61,18 @@ class PointScopeScaffold:
         """
         return self
 
+    def draw_at(self, pos: int):
+        """ Decide which grid to draw at 
+
+        Args:
+            pos (int): grid index
+
+        Returns:
+            PointScopeScaffold: self
+        """
+        return self
+
+
     def add_label(self, labels: np.ndarray):
         """
         Args:
