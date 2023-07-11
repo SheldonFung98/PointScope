@@ -21,9 +21,7 @@ It provides:
 
 ## Installation
 ```
-git clone https://github.com/SheldonVon98/PointScope.git
-cd PointScope
-pip3 install -e .
+pip3 install git+https://github.com/SheldonVon98/PointScope.git
 ```
 
 ## Usage
