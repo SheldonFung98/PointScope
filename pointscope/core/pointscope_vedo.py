@@ -1,14 +1,16 @@
 import numpy as np
 from .base import PointScopeScaffold
 from vedo import Points, Spheres, Plotter, Lines
+from ..utils.se3_numpy import se3_transform
 
 
 class PointScopeVedo(PointScopeScaffold):
     
     def __init__(self, 
+                subplot=1,
                 window_name=None, 
                 bg_color=[0.5, 0.5, 0.5],
-                subplot=1) -> None:
+                ) -> None:
         super().__init__()
         self.plt = Plotter(
             N=subplot,
@@ -16,20 +18,21 @@ class PointScopeVedo(PointScopeScaffold):
             bg=bg_color
         )
 
-        
     def show(self):
         self.plt.show().interactive().close()
-    
+
     def draw_at(self, pos: int):
         self.plt.at(pos)
         return super().draw_at(pos)
     
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None, at=0):
+        if tsfm is not None:
+            point_cloud = se3_transform(tsfm[:3], point_cloud)
         self.current_pcd = Spheres(point_cloud, r=0.02)
         self.plt.add(self.current_pcd)
         return super().add_pcd(point_cloud, tsfm)
     
-    def add_color(self, colors: np.ndarray = None):
+    def add_color(self, colors: np.ndarray):
         """Add color to current point cloud.
         
         color should match the shape of the current focused 

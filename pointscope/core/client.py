@@ -90,7 +90,7 @@ class PointScopeClient(PointScopeScaffold):
         )
         return super().add_pcd(point_cloud, tsfm)
     
-    def add_color(self, colors: np.ndarray = None):
+    def add_color(self, colors: np.ndarray):
         self.append_request(
             pointscope_pb2.VisRequest(
                 add_color=pointscope_pb2.AddColor(

@@ -1,7 +1,7 @@
-from setuptools import setup, find_packages
-from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 from setuptools.command.develop import develop
+from setuptools import setup, find_packages
+import os
 
 
 def generate_protos():

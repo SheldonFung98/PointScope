@@ -25,7 +25,7 @@ class PointScopeScaffold:
         self.add_color(np.zeros_like(point_cloud)+np.random.rand(3))
         return self
     
-    def add_color(self, colors: np.ndarray=None):
+    def add_color(self, colors: np.ndarray):
         """Add color to current point cloud.
         
         color should match the shape of the curren`t focused 
