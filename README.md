@@ -20,6 +20,12 @@ It provides:
 * grpc
 
 ## Installation
+Use conda environment (optional)
+```
+conda create --name psc python==3.8
+conda activate psc
+```
+Install via Github
 ```
 pip3 install git+https://github.com/SheldonVon98/PointScope.git
 ```
@@ -31,19 +37,23 @@ import numpy as np
 point_cloud = np.random.random((1000, 3))
 point_cloud_color = np.random.random((1000, 3))
 point_cloud_normal = np.random.random((1000, 3))
+another_pcd = np.random.random((30000, 3))*2+np.array([-0.5, -0.5, 2.0])
 ```
 ### Local Visualization
 ```
 from pointscope import PointScopeO3D as PSC     # Use Open3D backend
 # from pointscope import PointScopeVedo as PSC  # Use Vedo backend
-
-# Visualize point cloud with color.
+```
+Visualize point cloud with color.
+```
 PSC().add_pcd(point_cloud).add_color(point_cloud_color).show() 
-
-# Visualize point cloud with normal.
+```
+Visualize point cloud with normal.
+```
 PSC().add_pcd(point_cloud).add_normal(point_cloud_normal).show() 
-
-# Visualize point cloud with both.
+```
+Visualize point cloud with both.
+```
 PSC().add_pcd(point_cloud).add_color(point_cloud_color).add_normal(point_cloud_normal).show() 
 ```
 
@@ -59,8 +69,6 @@ python3 -m pointscope --server
 Start PointScope clinet
 ```
 from pointscope import PointScopeClient as PSC
-
-another_pcd = np.random.random((30000, 3))*2+np.array([-0.5, -0.5, 2.0])
 
 # Use Open3D backend
 PSC().o3d(show_coor=False, bg_color=[0.2, 0.3, 0.3]) \
