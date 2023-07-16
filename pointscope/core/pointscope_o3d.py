@@ -2,6 +2,7 @@ from .base import PointScopeScaffold
 import open3d as o3d
 import numpy as np
 import logging
+from multiprocessing import Process
 
 
 class PointScopeO3D(PointScopeScaffold):
@@ -24,7 +25,6 @@ class PointScopeO3D(PointScopeScaffold):
         while self.vis.poll_events():
             self.vis.update_renderer()
         self.vis.destroy_window()
-        return self
 
     def draw_at(self, pos: int):
         logging.warning(f"draw_at is not implemented in {self.__class__.__name__}.")

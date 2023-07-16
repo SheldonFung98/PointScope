@@ -2,6 +2,7 @@ import numpy as np
 from .base import PointScopeScaffold
 from vedo import Points, Spheres, Plotter, Lines
 from ..utils.se3_numpy import se3_transform
+from multiprocessing import Process
 
 
 class PointScopeVedo(PointScopeScaffold):

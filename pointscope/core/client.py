@@ -2,6 +2,7 @@ import grpc
 from .base import PointScopeScaffold
 from ..protos import pointscope_pb2_grpc
 from ..protos import pointscope_pb2
+from ..utils.protobuf_convert import np2protoMatrix
 import numpy as np
 import logging
 
@@ -10,7 +11,6 @@ class PointScopeClient(PointScopeScaffold):
     request_pool = list()
     
     def __init__(self, ip="0.0.0.0", port="50051") -> None:
-        self.n2p = PointScopeClient.np2protoMatrix
         channel = grpc.insecure_channel(f'{ip}:{port}')
         self.stub = pointscope_pb2_grpc.PointScopeStub(channel)
 
@@ -50,7 +50,7 @@ class PointScopeClient(PointScopeScaffold):
             pointscope_pb2.VisRequest(
                 vedo_init=pointscope_pb2.VedoInit(
                     window_name=window_name,
-                    bg_color=self.n2p(bg_color),
+                    bg_color=np2protoMatrix(bg_color),
                     subplot=subplot,
                 )
             )
@@ -62,7 +62,7 @@ class PointScopeClient(PointScopeScaffold):
             pointscope_pb2.VisRequest(
                 o3d_init=pointscope_pb2.O3DInit(
                     show_coor=show_coor,
-                    bg_color=self.n2p(bg_color),
+                    bg_color=np2protoMatrix(bg_color),
                     window_name=window_name
                 )
             )
@@ -83,8 +83,8 @@ class PointScopeClient(PointScopeScaffold):
         self.append_request(
             pointscope_pb2.VisRequest(
                 add_pcd=pointscope_pb2.AddPointCloud(
-                    pcd=self.n2p(point_cloud),
-                    tsfm=self.n2p(tsfm)
+                    pcd=np2protoMatrix(point_cloud),
+                    tsfm=np2protoMatrix(tsfm)
                 )
             )
         )
@@ -94,7 +94,7 @@ class PointScopeClient(PointScopeScaffold):
         self.append_request(
             pointscope_pb2.VisRequest(
                 add_color=pointscope_pb2.AddColor(
-                    colors=self.n2p(colors),
+                    colors=np2protoMatrix(colors),
                 )
             )
         )
@@ -104,9 +104,9 @@ class PointScopeClient(PointScopeScaffold):
         self.append_request(
             pointscope_pb2.VisRequest(
                 add_lines=pointscope_pb2.AddLines(
-                    starts=self.n2p(starts),
-                    ends=self.n2p(ends),
-                    colors=self.n2p(colors),
+                    starts=np2protoMatrix(starts),
+                    ends=np2protoMatrix(ends),
+                    colors=np2protoMatrix(colors),
                 )
             )
         )

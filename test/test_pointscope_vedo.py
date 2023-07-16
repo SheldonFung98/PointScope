@@ -5,7 +5,7 @@ import numpy as np
 
 torus = np.asarray(o3d.geometry.TriangleMesh.create_torus().vertices)
 sphere = np.asarray(o3d.geometry.TriangleMesh.create_sphere().vertices)
-                
+
 PointScopeVedo(2) \
     .add_pcd(torus) \
     .draw_at(1) \
