@@ -18,17 +18,6 @@ class PointScopeClient(PointScopeScaffold):
         self.request_pool.clear()
 
     @staticmethod
-    def np2protoMatrix(numpy_array):
-        if isinstance(numpy_array, list):
-            numpy_array = np.array(numpy_array)
-        if numpy_array is None:
-            return None
-        message = pointscope_pb2.Matrix()
-        message.shape.extend(numpy_array.shape)
-        message.data.extend(numpy_array.flatten())
-        return message
-    
-    @staticmethod
     def _is_init(r):
         return r.HasField("vedo_init") or r.HasField("o3d_init")
       
@@ -113,6 +102,6 @@ class PointScopeClient(PointScopeScaffold):
         return super().add_lines(starts, ends, color, colors)
     
     def show(self):
-        responses = self.stub.VisualizationSession(iter(self.request_pool))
-        for response in responses:
-            logging.info(f"Received response: {response.status}")
+        response = self.stub.VisualizationSession(iter(self.request_pool))
+        status = "ok" if response.status.ok else "failed"
+        print(f"Visualization session: {status}.")

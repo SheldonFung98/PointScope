@@ -3,7 +3,7 @@ syntax = "proto3";
 package pointscope;
 
 service PointScope {
-    rpc VisualizationSession(stream VisRequest) returns (stream VisResponse);
+    rpc VisualizationSession(stream VisRequest) returns (VisResponse);
 }
 
 message VisRequest {

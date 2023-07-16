@@ -1,10 +1,9 @@
 from pointscope.protos import pointscope_pb2, pointscope_pb2_grpc
 from .pointscope_vedo import PointScopeVedo as PS_Vedo
 from .pointscope_o3d import PointScopeO3D as PS_O3D
-from multiprocessing import Process
-import numpy as np
-import logging
 from ..utils.protobuf_convert import protoMatrix2np
+from multiprocessing import Process
+import logging
 
 
 class PointScopeRunner:
@@ -15,14 +14,6 @@ class PointScopeRunner:
             getattr(self, req["name"])(req["action"])
         self.psdelegator.show()
         del self.psdelegator
-
-    @staticmethod
-    def protoMatrix2np(protoMatrix):
-        np_array = np.array(protoMatrix.data)
-        if np_array.size:
-            return np_array.reshape(protoMatrix.shape)
-        else:
-            return None
 
     def vedo_init(self, request):
         self.psdelegator = PS_Vedo(
@@ -72,12 +63,12 @@ class PointScopeServicer(pointscope_pb2_grpc.PointScopeServicer):
             )
             print(command, end="", flush=True)
             req_queue.append({"name": field_name, "action": request})
-            response = pointscope_pb2.VisResponse(
-                status=pointscope_pb2.Status(ok=True)
-            )
-            yield response
+
         print("\nDone.")
         logging.info("Start visualization.")
         p = Process(target=PointScopeRunner, args=(req_queue, ))
         p.start()
         p.join()
+        return pointscope_pb2.VisResponse(
+            status=pointscope_pb2.Status(ok=True)
+        )
