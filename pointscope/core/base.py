@@ -1,14 +1,19 @@
+import os
 import numpy as np
-# from pointscope.core.server import GRPCServer
+import open3d as o3d
 from sklearn.manifold import TSNE
 
 
+supported_file_type = [
+    "xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"
+]
+
 class PointScopeScaffold:
-    current_pcd = None
-    curr_pcd_np = None
 
     def __init__(self) -> None:
         super().__init__()
+        self.current_pcd = None
+        self.curr_pcd_np = None
     
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray=None):
         """Add a new point cloud to visulize.
@@ -24,7 +29,7 @@ class PointScopeScaffold:
         self.curr_pcd_np = point_cloud
         self.add_color(np.zeros_like(point_cloud)+np.random.rand(3))
         return self
-    
+
     def add_color(self, colors: np.ndarray):
         """Add color to current point cloud.
         
@@ -72,6 +77,15 @@ class PointScopeScaffold:
         """
         return self
 
+    def add_pcd_from_file(self, file_path: str, format="auto"):
+        file_extension = file_path.split(".")[-1]
+        if file_extension not in supported_file_type:
+            if format not in supported_file_type:
+                print(f"{file_extension} file type is not supported.")
+                return self
+        pcd = o3d.io.read_point_cloud(file_path, format=format)
+        point_cloud = np.asarray(pcd.points)
+        return self.add_pcd(point_cloud)
 
     def add_label(self, labels: np.ndarray):
         """

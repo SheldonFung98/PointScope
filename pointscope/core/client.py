@@ -102,6 +102,11 @@ class PointScopeClient(PointScopeScaffold):
         return super().add_lines(starts, ends, color, colors)
     
     def show(self):
-        response = self.stub.VisualizationSession(iter(self.request_pool))
-        status = "ok" if response.status.ok else "failed"
-        print(f"Visualization session: {status}.")
+        try:
+            response = self.stub.VisualizationSession(iter(self.request_pool))
+            status = "ok" if response.status.ok else "failed"
+            print(f"Visualization session: {status}.")
+        except grpc._channel._InactiveRpcError:
+            print("Failed to connect to server.")
+        finally:
+            del self

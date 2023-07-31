@@ -88,5 +88,14 @@ PSC().vedo(subplot=2, bg_color=[0.2, 0.3, 0.3]) \
     .show()
 ```
 
+### Visualize PCD in terminal 
+```
+# Force the file format 'txt' to be 'xyzn' 
+python3 -m pointscope --show pointcloud_1.txt:xyzn airplane_0002.ply
+
+# Show them remotely
+python3 -m pointscope --remote --show pointcloud_1.txt:xyzn airplane_0002.ply
+```
+
 ## Call for Contributions
 The PointScope project welcomes your expertise and enthusiasm!

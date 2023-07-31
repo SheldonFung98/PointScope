@@ -19,4 +19,8 @@ class PointScopeServer:
         server.add_insecure_port(f'{self.ip}:{self.port}')
         server.start()
         logging.info(f"Start PointScope gRPC service at {self.ip}:{self.port}")
-        server.wait_for_termination()
+        try:
+            server.wait_for_termination()
+        except KeyboardInterrupt:
+            logging.info("Exit.")
+            
