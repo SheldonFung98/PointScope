@@ -44,6 +44,11 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
+        super().__init__({"PointScopeVedo": dict(
+            subplot=subplot,
+            window_name=window_name, 
+            bg_color=bg_color,
+        )})
         return self
     
     def o3d(self, show_coor=True, bg_color=[0.5, 0.5, 0.5], window_name=None):
@@ -56,7 +61,22 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
+        super().__init__({"PointScopeO3D": dict(
+            show_coor=show_coor, 
+            bg_color=bg_color,
+            window_name=window_name,
+        )})
         return self
+
+    def save(self, file_name=None, save_local=False):
+        self.append_request(
+            pointscope_pb2.VisRequest(
+                save=pointscope_pb2.Save(
+                    file_name=file_name,
+                )
+            )
+        )
+        return super().save(file_name) if save_local else self
 
     def draw_at(self, pos: int):
         self.append_request(

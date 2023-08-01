@@ -11,8 +11,7 @@ cube = np.random.random((30000, 3))*2+np.array([-0.5, -0.5, 2.0])
 
 # PointScopeO3D().add_pcd(torus)#.add_color(np.zeros_like(torus)).select_points(np.array([100, 12])).show()
 
-PSC().add_pcd(torus+np.array([0, 0, -1.0])).add_color(np.zeros_like(torus))\
+psc = PSC().add_pcd(torus+np.array([0, 0, -1.0])).add_color(np.zeros_like(torus))\
     .add_pcd(sphere)\
     .add_pcd(cube)\
-    .add_lines(cube[:20], sphere[:20]) \
-    .show()
+    .add_lines(cube[:20], sphere[:20]).save().show()

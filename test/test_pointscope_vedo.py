@@ -12,4 +12,4 @@ PointScopeVedo(2) \
     .add_pcd(sphere) \
     .add_color(np.random.random(sphere.shape)) \
     .add_lines(np.random.random((10, 3)), np.random.random((10, 3))) \
-    .show()
+    .save().show()

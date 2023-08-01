@@ -2,19 +2,35 @@ import os
 import numpy as np
 import open3d as o3d
 from sklearn.manifold import TSNE
+import pickle
+from datetime import datetime
 
 
 supported_file_type = [
     "xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"
 ]
+time_format = "%Y-%m-%dT%H:%M:%S%z"
 
 class PointScopeScaffold:
 
-    def __init__(self) -> None:
+    def __init__(self, ps_init) -> None:
         super().__init__()
+        self.ps_sequence = dict(ps_init=ps_init, commands=list())
         self.current_pcd = None
         self.curr_pcd_np = None
     
+    def _append_command(self, command_name, **kargs):
+        self.ps_sequence["commands"].append({
+            command_name: kargs
+        })
+
+    def save(self, file_name=None):
+        if file_name is None:
+            file_name = "PointScope_{}.pkl".format(datetime.now().strftime(time_format))
+        with open(file_name, 'wb') as pickle_file:
+            pickle.dump(self.ps_sequence, pickle_file)
+        return self
+
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray=None):
         """Add a new point cloud to visulize.
         
@@ -26,6 +42,7 @@ class PointScopeScaffold:
             point_cloud (np.ndarray): (n, 3)
             tsfm (np.ndarray): (4, 4) 
         """
+        self._append_command("add_pcd", point_cloud=point_cloud, tsfm=tsfm)
         self.curr_pcd_np = point_cloud
         self.add_color(np.zeros_like(point_cloud)+np.random.rand(3))
         return self
@@ -40,6 +57,7 @@ class PointScopeScaffold:
         Args:
             color (np.ndarray): (n, 3)
         """
+        self._append_command("add_color", colors=colors)
         return self
 
     
@@ -53,6 +71,7 @@ class PointScopeScaffold:
             colors (np.ndarray, optional): (m, 3). Defaults to None.
 
         """
+        self._append_command("add_lines", starts=starts, ends=ends, color=color, colors=colors)
         return self
 
     def add_normal(self, normals: np.ndarray=None, normal_length_ratio: float=0.05):
@@ -64,6 +83,7 @@ class PointScopeScaffold:
         Args:
             normals (np.ndarray): (n, 3)
         """
+        self._append_command("add_normal", normals=normals, normal_length_ratio=normal_length_ratio)
         return self
 
     def draw_at(self, pos: int):
@@ -75,6 +95,7 @@ class PointScopeScaffold:
         Returns:
             PointScopeScaffold: self
         """
+        self._append_command("draw_at", pos=pos)
         return self
 
     def add_pcd_from_file(self, file_path: str, format="auto"):

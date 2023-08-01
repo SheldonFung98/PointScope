@@ -13,6 +13,7 @@ PSC().vedo(subplot=2, bg_color=[0.2, 0.3, 0.3]) \
     .add_pcd(sphere)\
     .add_pcd(cube)\
     .add_lines(cube[:20], sphere[:20]) \
+    .save() \
     .show()
 
 

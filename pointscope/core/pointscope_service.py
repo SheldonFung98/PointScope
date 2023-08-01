@@ -26,7 +26,13 @@ class PointScopeRunner:
             show_coor=request.o3d_init.show_coor,
             bg_color=protoMatrix2np(request.o3d_init.bg_color),
             window_name=request.o3d_init.window_name)
-        
+
+    def save(self, request):
+        file_name = request.save.file_name
+        file_name = file_name if file_name else None
+        self.psdelegator.save(
+            file_name=file_name)
+
     def draw_at(self, request):
         self.psdelegator.draw_at(
             pos=request.draw_at.pos)

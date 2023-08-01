@@ -14,6 +14,7 @@ message VisRequest {
         AddColor        add_color       = 4;
         AddLines        add_lines       = 5;
         DrawAt          draw_at         = 6;
+        Save            save            = 7;
     }
 }
 
@@ -31,6 +32,10 @@ message O3DInit {
     bool show_coor = 1;
     Matrix bg_color = 2;
     string window_name = 3;
+}
+
+message Save {
+    string file_name = 3;
 }
 
 message DrawAt{

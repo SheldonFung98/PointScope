@@ -12,7 +12,11 @@ class PointScopeVedo(PointScopeScaffold):
                 window_name=None, 
                 bg_color=[0.5, 0.5, 0.5],
                 ) -> None:
-        super().__init__()
+        super().__init__({__class__.__name__: dict(
+            subplot=subplot,
+            window_name=window_name, 
+            bg_color=bg_color,
+        )})
         self.plt = Plotter(
             N=subplot,
             title=window_name if window_name else self.__class__.__name__,
@@ -26,12 +30,13 @@ class PointScopeVedo(PointScopeScaffold):
         self.plt.at(pos)
         return super().draw_at(pos)
     
-    def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None, at=0):
+    def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
+        pcd_input = point_cloud.copy()
         if tsfm is not None:
             point_cloud = se3_transform(tsfm[:3], point_cloud)
         self.current_pcd = Spheres(point_cloud, r=0.02)
         self.plt.add(self.current_pcd)
-        return super().add_pcd(point_cloud, tsfm)
+        return super().add_pcd(pcd_input, tsfm)
     
     def add_color(self, colors: np.ndarray):
         """Add color to current point cloud.
@@ -43,9 +48,10 @@ class PointScopeVedo(PointScopeScaffold):
         Args:
             color (np.ndarray): (n, 3)
         """
+        colors_input = colors.copy()
         if self.current_pcd is None:
             print("No current operating point cloud.")
-            return super().add_color(colors)
+            return super().add_color(colors_input)
         
         color_channel = colors.shape[1]
         groups = int(self.current_pcd.ncells / self.curr_pcd_np.shape[0])
@@ -55,7 +61,7 @@ class PointScopeVedo(PointScopeScaffold):
         
         colors = colors[:, None, :].repeat(groups, 1).reshape(-1, color_channel)
         self.current_pcd.cell_individual_colors(colors)
-        return super().add_color(colors)
+        return super().add_color(colors_input)
 
     def add_normal(self, normals: np.ndarray = None, normal_length_ratio: float = 0.05):
         """Add normals to current point cloud.

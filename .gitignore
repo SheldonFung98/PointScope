@@ -6,3 +6,4 @@ build/
 gen_protos.sh
 pointscope_pb2*
 .eggs/
+*.pkl
