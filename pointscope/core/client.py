@@ -8,9 +8,9 @@ import logging
 
 
 class PointScopeClient(PointScopeScaffold):
-    request_pool = list()
     
     def __init__(self, ip="0.0.0.0", port="50051") -> None:
+        self.request_pool = list()
         channel = grpc.insecure_channel(f'{ip}:{port}')
         self.stub = pointscope_pb2_grpc.PointScopeStub(channel)
 
