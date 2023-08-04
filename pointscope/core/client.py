@@ -2,7 +2,7 @@ import grpc
 from .base import PointScopeScaffold
 from ..protos import pointscope_pb2_grpc
 from ..protos import pointscope_pb2
-from ..utils.protobuf_convert import np2protoMatrix
+from ..utils.common import np2protoMatrix
 import numpy as np
 import logging
 
@@ -121,6 +121,9 @@ class PointScopeClient(PointScopeScaffold):
         )
         return super().add_lines(starts, ends, color, colors)
     
+    def add_normal(self, normals: np.ndarray=None, normal_length_ratio: float=0.05):
+        return super().add_normal(normals, normal_length_ratio)
+    
     def show(self):
         try:
             response = self.stub.VisualizationSession(iter(self.request_pool))
@@ -129,4 +132,7 @@ class PointScopeClient(PointScopeScaffold):
         except grpc._channel._InactiveRpcError:
             print("Failed to connect to server.")
         finally:
-            del self
+            return super().show()
+        
+    def get_params():
+        return super().get_params()

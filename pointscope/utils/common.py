@@ -1,6 +1,7 @@
+import os
+import pickle
 import numpy as np
 from ..protos import pointscope_pb2
-
 
 def protoMatrix2np(protoMatrix):
     np_array = np.array(protoMatrix.data)
@@ -18,3 +19,13 @@ def np2protoMatrix(numpy_array):
     message.shape.extend(numpy_array.shape)
     message.data.extend(numpy_array.flatten())
     return message
+
+def load_pkl(path):
+    if os.path.exists(path):
+        with open(path, 'rb') as pickle_file:
+            pkl_obj = pickle.load(pickle_file)
+        return pkl_obj
+
+def dump_pkl(path, data):
+    with open(path, 'wb') as pickle_file:
+        pickle.dump(data, pickle_file)

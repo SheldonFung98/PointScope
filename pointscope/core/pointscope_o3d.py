@@ -2,7 +2,6 @@ from .base import PointScopeScaffold
 import open3d as o3d
 import numpy as np
 import logging
-from multiprocessing import Process
 
 
 class PointScopeO3D(PointScopeScaffold):
@@ -13,12 +12,12 @@ class PointScopeO3D(PointScopeScaffold):
                  bg_color=[0.5, 0.5, 0.5],
                  window_name=None,
                  vis=None) -> None:
-        super().__init__({__class__.__name__: dict(
+        super().__init__(__class__.__name__, dict(
             show_coor=show_coor, 
             bg_color=bg_color,
             window_name=window_name,
             vis=vis
-        )})
+        ))
         self.vis = vis if vis is not None else o3d.visualization.Visualizer()
         self.vis.create_window(
             window_name if window_name else self.__class__.__name__)
@@ -27,9 +26,23 @@ class PointScopeO3D(PointScopeScaffold):
         opt.background_color = np.asarray(bg_color)
 
     def show(self):
+        ctr = self.vis.get_view_control()
+        if self.params["perspective"]:
+            camera_params = ctr.convert_to_pinhole_camera_parameters()
+            camera_params.extrinsic = self.params["perspective"]["extrinsic"]
+            ctr.convert_from_pinhole_camera_parameters(camera_params)
+
         while self.vis.poll_events():
             self.vis.update_renderer()
+            
+        camera_params = ctr.convert_to_pinhole_camera_parameters()
+        self.params["perspective"] = dict(
+            intrinsic=camera_params.intrinsic.intrinsic_matrix,
+            extrinsic=camera_params.extrinsic
+        )
+        
         self.vis.destroy_window()
+        return super().show()
 
     def draw_at(self, pos: int):
         logging.warning(f"draw_at is not implemented in {self.__class__.__name__}.")

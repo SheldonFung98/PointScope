@@ -1,7 +1,7 @@
 from pointscope.protos import pointscope_pb2, pointscope_pb2_grpc
 from .pointscope_vedo import PointScopeVedo as PS_Vedo
 from .pointscope_o3d import PointScopeO3D as PS_O3D
-from ..utils.protobuf_convert import protoMatrix2np
+from ..utils.common import protoMatrix2np
 from multiprocessing import Process
 import logging
 

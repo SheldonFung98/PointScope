@@ -4,21 +4,39 @@ import open3d as o3d
 from sklearn.manifold import TSNE
 import pickle
 from datetime import datetime
+from abc import ABC, abstractmethod
+from pathlib import Path
+from ..utils.common import load_pkl, dump_pkl
 
 
-supported_file_type = [
+SUPPORTED_FILE_TYPE = [
     "xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"
 ]
-time_format = "%Y-%m-%dT%H:%M:%S%z"
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+POINTSCOPE_SAVE_PATH = Path.home()/".pointscope"
 
-class PointScopeScaffold:
 
-    def __init__(self, ps_init) -> None:
-        super().__init__()
-        self.ps_sequence = dict(ps_init=ps_init, commands=list())
+class PointScopeScaffold(ABC):
+
+    def __init__(self, ps_type, ps_args) -> None:
         self.current_pcd = None
         self.curr_pcd_np = None
-    
+        self.ps_sequence = dict(ps_type=ps_type, ps_args=ps_args, commands=list())
+        self.params = dict(perspective=dict(), window_params=dict())
+        self._params_io(operation="load")
+        
+    def _params_io(self, operation):
+        assert operation in ["load", "save"]
+        save_path = str(POINTSCOPE_SAVE_PATH/(self.ps_sequence["ps_type"]+"_{}.pkl"))
+        if not os.path.exists(POINTSCOPE_SAVE_PATH):
+            os.mkdir(POINTSCOPE_SAVE_PATH)
+            return
+        for params_type in self.params:
+            if operation == "load":
+                self.params[params_type] = load_pkl(save_path.format(params_type))
+            elif operation == "save":
+                dump_pkl(save_path.format(params_type), self.params[params_type])
+
     def _append_command(self, command_name, **kargs):
         self.ps_sequence["commands"].append({
             command_name: kargs
@@ -26,11 +44,16 @@ class PointScopeScaffold:
 
     def save(self, file_name=None):
         if file_name is None:
-            file_name = "PointScope_{}.pkl".format(datetime.now().strftime(time_format))
-        with open(file_name, 'wb') as pickle_file:
-            pickle.dump(self.ps_sequence, pickle_file)
+            file_name = "PointScope_{}.pkl".format(datetime.now().strftime(TIME_FORMAT))
+        dump_pkl(file_name, self.ps_sequence)
         return self
 
+    @abstractmethod
+    def show(self):
+        self._params_io(operation="save")
+        return self
+    
+    @abstractmethod
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray=None):
         """Add a new point cloud to visulize.
         
@@ -47,6 +70,7 @@ class PointScopeScaffold:
         self.add_color(np.zeros_like(point_cloud)+np.random.rand(3))
         return self
 
+    @abstractmethod
     def add_color(self, colors: np.ndarray):
         """Add color to current point cloud.
         
@@ -61,6 +85,7 @@ class PointScopeScaffold:
         return self
 
     
+    @abstractmethod
     def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list=[1, 0, 0], colors: np.ndarray=None):
         """Add arbitrary lines to visulize.
 
@@ -74,6 +99,7 @@ class PointScopeScaffold:
         self._append_command("add_lines", starts=starts, ends=ends, color=color, colors=colors)
         return self
 
+    @abstractmethod
     def add_normal(self, normals: np.ndarray=None, normal_length_ratio: float=0.05):
         """Add normals to current point cloud.
         
@@ -86,6 +112,7 @@ class PointScopeScaffold:
         self._append_command("add_normal", normals=normals, normal_length_ratio=normal_length_ratio)
         return self
 
+    @abstractmethod
     def draw_at(self, pos: int):
         """ Decide which grid to draw at 
 
@@ -100,8 +127,8 @@ class PointScopeScaffold:
 
     def add_pcd_from_file(self, file_path: str, format="auto"):
         file_extension = file_path.split(".")[-1]
-        if file_extension not in supported_file_type:
-            if format not in supported_file_type:
+        if file_extension not in SUPPORTED_FILE_TYPE:
+            if format not in SUPPORTED_FILE_TYPE:
                 print(f"{file_extension} file type is not supported.")
                 return self
         pcd = o3d.io.read_point_cloud(file_path, format=format)
@@ -120,14 +147,12 @@ class PointScopeScaffold:
         label_mapper = dict(zip(label_uniques, range(len(label_uniques))))
         random_color = np.random.random((len(label_uniques), 3))
         label_colors = np.array([random_color[label_mapper[each]] for each in labels])
-        self.add_color(label_colors)
-        return self
+        return self.add_color(label_colors)
     
     def select_points(self, indices: np.ndarray):
         labels = np.zeros((self.curr_pcd_np.shape[0]))
         labels[indices] = 1
-        self.add_label(labels)
-        return self
+        return self.add_label(labels)
     
     def add_feat(self, feat: np.ndarray):
         """Use T-SNE to visualize feature.
@@ -138,5 +163,4 @@ class PointScopeScaffold:
         feat_tsne = TSNE(n_components=3, 
                          learning_rate='auto', 
                          init='random').fit_transform(feat)
-        self.add_color(feat_tsne)
-        return self
+        return self.add_color(feat_tsne)

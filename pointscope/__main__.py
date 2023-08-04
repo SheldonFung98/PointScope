@@ -58,11 +58,10 @@ elif len(args.show):
     psc.show()
 
 elif args.load:
-    import pickle
+    from utils.common import load_pkl
     import importlib
-    with open(args.load, 'rb') as pickle_file:
-        ps_sequence = pickle.load(pickle_file)
-    ps_class, ps_args = next(iter(ps_sequence["ps_init"].items()))
+    ps_sequence = load_pkl(args.load)
+    ps_class, ps_args = ps_sequence["ps_type"], ps_sequence["ps_args"]
     psc = getattr(importlib.import_module("pointscope"), ps_class)(**ps_args)
     for command in ps_sequence["commands"]:
         cmd_func, func_args = next(iter(command.items()))
