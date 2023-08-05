@@ -11,25 +11,38 @@ class PointScopeO3D(PointScopeScaffold):
                  show_coor=True, 
                  bg_color=[0.5, 0.5, 0.5],
                  window_name=None,
-                 vis=None) -> None:
+                 vis=None, 
+                 vis_params=None) -> None:
         super().__init__(__class__.__name__, dict(
             show_coor=show_coor, 
             bg_color=bg_color,
             window_name=window_name,
             vis=vis
-        ))
+        ), vis_params)
         self.vis = vis if vis is not None else o3d.visualization.Visualizer()
-        self.vis.create_window(
-            window_name if window_name else self.__class__.__name__)
+        window_name=window_name if window_name else self.__class__.__name__
+        if self.params["window_params"]:
+            self.vis.create_window(
+                window_name=window_name,
+                width=self.params["window_params"]["width"],
+                height=self.params["window_params"]["height"],
+            )
+        else:
+            self.vis.create_window(window_name=window_name)
         opt = self.vis.get_render_option()
         opt.show_coordinate_frame = show_coor
         opt.background_color = np.asarray(bg_color)
 
-    def show(self):
+    def show(self, save_params=True):
         ctr = self.vis.get_view_control()
-        if self.params["perspective"]:
-            camera_params = ctr.convert_to_pinhole_camera_parameters()
+        if self.params["perspective"] and self.params["window_params"]:
+            camera_params = o3d.camera.PinholeCameraParameters()
             camera_params.extrinsic = self.params["perspective"]["extrinsic"]
+            camera_params.intrinsic = o3d.camera.PinholeCameraIntrinsic(
+                width=self.params["window_params"]["width"],
+                height=self.params["window_params"]["height"],
+                intrinsic_matrix=self.params["perspective"]["intrinsic"]
+            )
             ctr.convert_from_pinhole_camera_parameters(camera_params)
 
         while self.vis.poll_events():
@@ -40,9 +53,12 @@ class PointScopeO3D(PointScopeScaffold):
             intrinsic=camera_params.intrinsic.intrinsic_matrix,
             extrinsic=camera_params.extrinsic
         )
-        
+        self.params["window_params"] = dict(
+            height=camera_params.intrinsic.height,
+            width=camera_params.intrinsic.width,
+        )
         self.vis.destroy_window()
-        return super().show()
+        return super().show(save_params)
 
     def draw_at(self, pos: int):
         logging.warning(f"draw_at is not implemented in {self.__class__.__name__}.")

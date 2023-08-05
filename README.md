@@ -11,7 +11,8 @@ It provides:
 - Point cloud visualization with one-liner style command.
 - Visualize point cloud locally or remotely.
 - Easy to switch backend (Open3D/Vedo).
-
+- Auto-save camera perspective.
+- Savable visualization session.
 
 ## Dependencies
 * Numpy 
@@ -103,8 +104,8 @@ This functionality is supported by both local and remote visualization.
 PSC().add_pcd(point_cloud).add_color(np.zeros_like(point_cloud))\
     .add_pcd(another_pcd)\
     .add_lines(point_cloud[:20], another_pcd[:20]) \
-    .save() \ # Add this line to save the whole session.
-    .show()
+    .show() \
+    .save() # Add this line to save the whole session.
 ```
 ```
 # Load the visualization session.

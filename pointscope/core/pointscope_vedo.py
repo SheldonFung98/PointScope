@@ -11,32 +11,39 @@ class PointScopeVedo(PointScopeScaffold):
                 subplot=1,
                 window_name=None, 
                 bg_color=[0.5, 0.5, 0.5],
-                ) -> None:
+                vis_params=None) -> None:
         super().__init__(__class__.__name__, dict(
             subplot=subplot,
             window_name=window_name, 
             bg_color=bg_color,
-        ))
+        ), vis_params)
+        size = None
+        if self.params["window_params"]:
+            height = self.params["window_params"]["height"]
+            width = self.params["window_params"]["width"]
+            size = (width, height)
         self.plt = Plotter(
             N=subplot,
             title=window_name if window_name else self.__class__.__name__,
-            bg=bg_color
+            bg=bg_color,
+            size=size
         )
 
-    def show(self):
-        if self.params["perspective"]:
-            perspective = self.params["perspective"]
-            self.plt.show(camera=perspective).interactive()
-        else:
-            self.plt.show().interactive()
+    def show(self, save_params=True):
+        self.plt.show(camera=self.params["perspective"]).interactive()
         self.params["perspective"] = dict(
             pos=self.plt.camera.GetPosition(),
             focal_point=self.plt.camera.GetFocalPoint(),
             distance=self.plt.camera.GetDistance(),
             viewup=self.plt.camera.GetViewUp(),
         )
+        width, height = self.plt.window.GetSize()
+        self.params["window_params"] = dict(
+            height=height,
+            width=width
+        )
         self.plt.close()
-        return super().show()
+        return super().show(save_params)
 
     def draw_at(self, pos: int):
         self.plt.at(pos)

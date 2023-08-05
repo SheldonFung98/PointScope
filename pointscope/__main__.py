@@ -58,12 +58,12 @@ elif len(args.show):
     psc.show()
 
 elif args.load:
-    from utils.common import load_pkl
+    from .utils.common import load_pkl
     import importlib
     ps_sequence = load_pkl(args.load)
-    ps_class, ps_args = ps_sequence["ps_type"], ps_sequence["ps_args"]
-    psc = getattr(importlib.import_module("pointscope"), ps_class)(**ps_args)
+    ps_class, ps_args, vis_params = ps_sequence["ps_type"], ps_sequence["ps_args"], ps_sequence["params"]
+    psc = getattr(importlib.import_module("pointscope"), ps_class)(**ps_args, vis_params=vis_params)
     for command in ps_sequence["commands"]:
         cmd_func, func_args = next(iter(command.items()))
         getattr(psc, cmd_func)(**func_args)
-    psc.show()
+    psc.show(save_params=False)

@@ -14,4 +14,5 @@ cube = np.random.random((30000, 3))*2+np.array([-0.5, -0.5, 2.0])
 psc = PSC().add_pcd(torus+np.array([0, 0, -1.0])).add_color(np.zeros_like(torus))\
     .add_pcd(sphere)\
     .add_pcd(cube)\
-    .add_lines(cube[:20], sphere[:20]).save().show()
+    .add_lines(cube[:20], sphere[:20]).show() \
+    .save()

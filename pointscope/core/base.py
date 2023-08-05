@@ -2,7 +2,7 @@ import os
 import numpy as np
 import open3d as o3d
 from sklearn.manifold import TSNE
-import pickle
+import copy
 from datetime import datetime
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -18,13 +18,19 @@ POINTSCOPE_SAVE_PATH = Path.home()/".pointscope"
 
 class PointScopeScaffold(ABC):
 
-    def __init__(self, ps_type, ps_args) -> None:
+    def __init__(self, ps_type, ps_args, vis_params) -> None:
         self.current_pcd = None
         self.curr_pcd_np = None
-        self.ps_sequence = dict(ps_type=ps_type, ps_args=ps_args, commands=list())
-        self.params = dict(perspective=dict(), window_params=dict())
-        self._params_io(operation="load")
-        
+        self.ps_sequence = dict(
+            ps_type=ps_type, 
+            ps_args=ps_args, 
+            commands=list(), 
+            params=dict(perspective=None, window_params=None) if vis_params is None else vis_params
+        )
+        self.params = self.ps_sequence["params"]
+        if vis_params is None:
+            self._params_io(operation="load")
+
     def _params_io(self, operation):
         assert operation in ["load", "save"]
         save_path = str(POINTSCOPE_SAVE_PATH/(self.ps_sequence["ps_type"]+"_{}.pkl"))
@@ -36,7 +42,7 @@ class PointScopeScaffold(ABC):
                 self.params[params_type] = load_pkl(save_path.format(params_type))
             elif operation == "save":
                 dump_pkl(save_path.format(params_type), self.params[params_type])
-
+    
     def _append_command(self, command_name, **kargs):
         self.ps_sequence["commands"].append({
             command_name: kargs
@@ -49,8 +55,9 @@ class PointScopeScaffold(ABC):
         return self
 
     @abstractmethod
-    def show(self):
-        self._params_io(operation="save")
+    def show(self, save_params=True):
+        if save_params:
+            self._params_io(operation="save")
         return self
     
     @abstractmethod
