@@ -44,11 +44,6 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
-        super().__init__({"PointScopeVedo": dict(
-            subplot=subplot,
-            window_name=window_name, 
-            bg_color=bg_color,
-        )})
         return self
     
     def o3d(self, show_coor=True, bg_color=[0.5, 0.5, 0.5], window_name=None):
@@ -61,11 +56,6 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
-        super().__init__({"PointScopeO3D": dict(
-            show_coor=show_coor, 
-            bg_color=bg_color,
-            window_name=window_name,
-        )})
         return self
 
     def save(self, file_name=None, save_local=False):
@@ -76,7 +66,7 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
-        return super().save(file_name) if save_local else self
+        return self
 
     def draw_at(self, pos: int):
         self.append_request(
@@ -86,7 +76,7 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
-        return super().draw_at(pos)
+        return self
 
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
         self.append_request(
@@ -97,7 +87,7 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
-        return super().add_pcd(point_cloud, tsfm)
+        return self
     
     def add_color(self, colors: np.ndarray):
         self.append_request(
@@ -107,7 +97,7 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
-        return super().add_color(colors)
+        return self
     
     def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = [], colors: np.ndarray = None):
         self.append_request(
@@ -119,10 +109,10 @@ class PointScopeClient(PointScopeScaffold):
                 )
             )
         )
-        return super().add_lines(starts, ends, color, colors)
+        return self
     
     def add_normal(self, normals: np.ndarray=None, normal_length_ratio: float=0.05):
-        return super().add_normal(normals, normal_length_ratio)
+        return self
     
     def show(self):
         try:
@@ -132,7 +122,4 @@ class PointScopeClient(PointScopeScaffold):
         except grpc._channel._InactiveRpcError:
             print("Failed to connect to server.")
         finally:
-            return super().show()
-        
-    def get_params():
-        return super().get_params()
+            return super().show(save_params=False)

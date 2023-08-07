@@ -18,7 +18,7 @@ POINTSCOPE_SAVE_PATH = Path.home()/".pointscope"
 
 class PointScopeScaffold(ABC):
 
-    def __init__(self, ps_type, ps_args, vis_params) -> None:
+    def __init__(self, ps_type, ps_args, vis_params=None) -> None:
         self.current_pcd = None
         self.curr_pcd_np = None
         self.ps_sequence = dict(

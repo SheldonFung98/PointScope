@@ -20,7 +20,7 @@ class PointScopeO3D(PointScopeScaffold):
             vis=vis
         ), vis_params)
         self.vis = vis if vis is not None else o3d.visualization.Visualizer()
-        window_name=window_name if window_name else self.__class__.__name__
+        window_name = window_name if window_name else self.__class__.__name__
         if self.params["window_params"]:
             self.vis.create_window(
                 window_name=window_name,

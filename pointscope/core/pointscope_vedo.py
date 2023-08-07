@@ -17,11 +17,12 @@ class PointScopeVedo(PointScopeScaffold):
             window_name=window_name, 
             bg_color=bg_color,
         ), vis_params)
-        size = None
         if self.params["window_params"]:
             height = self.params["window_params"]["height"]
             width = self.params["window_params"]["width"]
             size = (width, height)
+        else:
+            size = "auto"
         self.plt = Plotter(
             N=subplot,
             title=window_name if window_name else self.__class__.__name__,
