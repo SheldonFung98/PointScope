@@ -1,13 +1,12 @@
 import os
+import random
 import numpy as np
 import open3d as o3d
 from sklearn.manifold import TSNE
-import copy
 from datetime import datetime
 from abc import ABC, abstractmethod
 from pathlib import Path
 from ..utils.common import load_pkl, dump_pkl
-
 
 SUPPORTED_FILE_TYPE = [
     "xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"
@@ -74,7 +73,7 @@ class PointScopeScaffold(ABC):
         """
         self._append_command("add_pcd", point_cloud=point_cloud, tsfm=tsfm)
         self.curr_pcd_np = point_cloud
-        self.add_color(np.zeros_like(point_cloud)+np.random.rand(3))
+        self.add_color(np.zeros_like(point_cloud)+[random.random() for _ in range(3)])
         return self
 
     @abstractmethod
