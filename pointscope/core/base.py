@@ -169,4 +169,6 @@ class PointScopeScaffold(ABC):
         feat_tsne = TSNE(n_components=3, 
                          learning_rate='auto', 
                          init='random').fit_transform(feat)
+        feat_tsne -= feat_tsne.min()
+        feat_tsne /= feat_tsne.max()
         return self.add_color(feat_tsne)
