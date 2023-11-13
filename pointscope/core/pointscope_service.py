@@ -17,8 +17,8 @@ class PointScopeRunner:
 
     def vedo_init(self, request):
         self.psdelegator = PS_Vedo(
-            window_name=request.o3d_init.window_name,
-            bg_color=protoMatrix2np(request.o3d_init.bg_color),
+            window_name=request.vedo_init.window_name,
+            bg_color=protoMatrix2np(request.vedo_init.bg_color),
             subplot=request.vedo_init.subplot)
     
     def o3d_init(self, request):

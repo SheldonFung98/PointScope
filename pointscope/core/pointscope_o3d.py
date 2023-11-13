@@ -36,14 +36,17 @@ class PointScopeO3D(PointScopeScaffold):
     def show(self, save_params=True):
         ctr = self.vis.get_view_control()
         if self.params["perspective"] and self.params["window_params"]:
-            camera_params = o3d.camera.PinholeCameraParameters()
-            camera_params.extrinsic = self.params["perspective"]["extrinsic"]
-            camera_params.intrinsic = o3d.camera.PinholeCameraIntrinsic(
-                width=self.params["window_params"]["width"],
-                height=self.params["window_params"]["height"],
-                intrinsic_matrix=self.params["perspective"]["intrinsic"]
-            )
-            ctr.convert_from_pinhole_camera_parameters(camera_params)
+            try:
+                camera_params = o3d.camera.PinholeCameraParameters()
+                camera_params.extrinsic = self.params["perspective"]["extrinsic"]
+                camera_params.intrinsic = o3d.camera.PinholeCameraIntrinsic(
+                    width=self.params["window_params"]["width"],
+                    height=self.params["window_params"]["height"],
+                    intrinsic_matrix=self.params["perspective"]["intrinsic"]
+                )
+                ctr.convert_from_pinhole_camera_parameters(camera_params)
+            except Exception:
+                print("Failed to load camera params")
 
         while self.vis.poll_events():
             self.vis.update_renderer()
