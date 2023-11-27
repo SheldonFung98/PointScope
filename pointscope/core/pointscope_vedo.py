@@ -95,6 +95,10 @@ class PointScopeVedo(PointScopeScaffold):
         return super().add_normal(normals, normal_length_ratio)
 
     def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = ..., colors: np.ndarray = None):
-        lines = Lines(Points(starts), Points(ends), c=colors, alpha=0.9, lw=8)
+        lines = Lines(Points(starts), Points(ends), alpha=0.5, lw=4)
+        
+        if colors.max() <= 1.0:
+            colors = np.asarray(colors, dtype=np.float32) * 255
+        lines.cell_individual_colors(colors)
         self.plt.add(lines)
         return super().add_lines(starts, ends, color, colors)
