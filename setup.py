@@ -37,8 +37,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         'numpy>=1.23.5',
-        'open3d>=0.16.0',
+        'open3d>=0.10.0',
         'grpcio>=1.56.0',
+        'protobuf>=3.20.0',
         'vedo>=2023.4.4',
         'grpcio-tools'
     ],
