@@ -6,12 +6,19 @@ from ..utils.common import np2protoMatrix
 import numpy as np
 import logging
 
+MAX_MESSAGE_LENGTH = 100*1024*1024
 
 class PointScopeClient(PointScopeScaffold):
     
     def __init__(self, ip="0.0.0.0", port="50051") -> None:
         self.request_pool = list()
-        channel = grpc.insecure_channel(f'{ip}:{port}')
+        channel = grpc.insecure_channel(
+            f'{ip}:{port}',
+            options=[
+                ('grpc.max_send_message_length', MAX_MESSAGE_LENGTH),
+                ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH),
+            ],
+        )
         self.stub = pointscope_pb2_grpc.PointScopeStub(channel)
 
     def __del__(self):

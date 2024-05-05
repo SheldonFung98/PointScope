@@ -4,6 +4,7 @@ from pointscope.protos import pointscope_pb2_grpc
 from .pointscope_service import PointScopeServicer
 import logging
 
+MAX_MESSAGE_LENGTH = 100*1024*1024
 
 class PointScopeServer:
 
@@ -13,6 +14,15 @@ class PointScopeServer:
 
     def run(self):
         server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        
+        server = grpc.server(
+            futures.ThreadPoolExecutor(max_workers=10), 
+            options = [
+                ('grpc.max_send_message_length', MAX_MESSAGE_LENGTH),
+                ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH)
+            ])
+        
+        
         pointscope_pb2_grpc.add_PointScopeServicer_to_server(
             PointScopeServicer(), server)
 
