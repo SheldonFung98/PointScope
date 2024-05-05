@@ -2,7 +2,7 @@ import grpc
 from .base import PointScopeScaffold
 from ..protos import pointscope_pb2_grpc
 from ..protos import pointscope_pb2
-from ..utils.common import np2protoMatrix
+from ..utils.common import np2protoMatrix, cast_tensor_to_numpy
 import numpy as np
 import logging
 
@@ -85,6 +85,7 @@ class PointScopeClient(PointScopeScaffold):
         )
         return self
 
+    @cast_tensor_to_numpy
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
         self.append_request(
             pointscope_pb2.VisRequest(
@@ -96,6 +97,7 @@ class PointScopeClient(PointScopeScaffold):
         )
         return self
     
+    @cast_tensor_to_numpy
     def add_color(self, colors: np.ndarray):
         self.append_request(
             pointscope_pb2.VisRequest(
@@ -106,6 +108,7 @@ class PointScopeClient(PointScopeScaffold):
         )
         return self
     
+    @cast_tensor_to_numpy
     def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = [], colors: np.ndarray = None):
         self.append_request(
             pointscope_pb2.VisRequest(
@@ -118,6 +121,7 @@ class PointScopeClient(PointScopeScaffold):
         )
         return self
     
+    @cast_tensor_to_numpy
     def add_normal(self, normals: np.ndarray=None, normal_length_ratio: float=0.05):
         return self
     

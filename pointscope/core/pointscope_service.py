@@ -2,7 +2,6 @@ from pointscope.protos import pointscope_pb2, pointscope_pb2_grpc
 from .pointscope_vedo import PointScopeVedo as PS_Vedo
 from .pointscope_o3d import PointScopeO3D as PS_O3D
 from ..utils.common import protoMatrix2np
-from ..utils.common import cast_tensor_to_numpy
 from multiprocessing import Process
 import logging
 
@@ -38,17 +37,14 @@ class PointScopeRunner:
         self.psdelegator.draw_at(
             pos=request.draw_at.pos)
         
-    @cast_tensor_to_numpy
     def add_pcd(self, request):
         self.psdelegator.add_pcd(
             point_cloud=protoMatrix2np(request.add_pcd.pcd),
             tsfm=protoMatrix2np(request.add_pcd.tsfm))
         
-    @cast_tensor_to_numpy
     def add_color(self, request):
         self.psdelegator.add_color(colors=protoMatrix2np(request.add_color.colors))
         
-    @cast_tensor_to_numpy
     def add_lines(self, request):
         self.psdelegator.add_lines(
             starts=protoMatrix2np(request.add_lines.starts),
