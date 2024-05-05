@@ -3,6 +3,7 @@ from .base import PointScopeScaffold
 from vedo import Points, Spheres, Plotter, Lines
 from ..utils.se3_numpy import se3_transform
 from multiprocessing import Process
+from ..utils.common import cast_tensor_to_numpy
 
 
 class PointScopeVedo(PointScopeScaffold):
@@ -50,6 +51,7 @@ class PointScopeVedo(PointScopeScaffold):
         self.plt.at(pos)
         return super().draw_at(pos)
     
+    @cast_tensor_to_numpy
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
         pcd_input = point_cloud.copy()
         if tsfm is not None:
@@ -58,6 +60,7 @@ class PointScopeVedo(PointScopeScaffold):
         self.plt.add(self.current_pcd)
         return super().add_pcd(pcd_input, tsfm)
     
+    @cast_tensor_to_numpy
     def add_color(self, colors: np.ndarray):
         """Add color to current point cloud.
         
@@ -83,6 +86,7 @@ class PointScopeVedo(PointScopeScaffold):
         self.current_pcd.cell_individual_colors(colors)
         return super().add_color(colors_input)
 
+    @cast_tensor_to_numpy
     def add_normal(self, normals: np.ndarray = None, normal_length_ratio: float = 0.05):
         """Add normals to current point cloud.
         
@@ -94,6 +98,7 @@ class PointScopeVedo(PointScopeScaffold):
         """
         return super().add_normal(normals, normal_length_ratio)
 
+    @cast_tensor_to_numpy
     def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = ..., colors: np.ndarray = None):
         lines = Lines(Points(starts), Points(ends), alpha=0.5, lw=4)
         

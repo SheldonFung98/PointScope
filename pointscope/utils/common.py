@@ -3,6 +3,13 @@ import pickle
 import numpy as np
 from ..protos import pointscope_pb2
 
+try:
+    import torch
+    TORCH_INSTALLED = True
+except ImportError:
+    TORCH_INSTALLED = False
+    
+    
 def protoMatrix2np(protoMatrix):
     np_array = np.array(protoMatrix.data)
     if np_array.size:
@@ -29,3 +36,17 @@ def load_pkl(path):
 def dump_pkl(path, data):
     with open(path, 'wb') as pickle_file:
         pickle.dump(data, pickle_file)
+        
+def tensor2numpy(*args):
+    if TORCH_INSTALLED:
+        args = list(args)
+        for i in range(len(args)):
+            if isinstance(args[i], torch.Tensor):
+                args[i] = args[i].cpu().detach().numpy()
+    return args
+
+
+def cast_tensor_to_numpy(func):
+    def wrapper(*args):
+        return func(*tensor2numpy(*args))
+    return wrapper

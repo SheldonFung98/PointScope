@@ -2,6 +2,7 @@ from .base import PointScopeScaffold
 import open3d as o3d
 import numpy as np
 import logging
+from ..utils.common import cast_tensor_to_numpy
 
 
 class PointScopeO3D(PointScopeScaffold):
@@ -67,6 +68,7 @@ class PointScopeO3D(PointScopeScaffold):
         logging.warning(f"draw_at is not implemented in {self.__class__.__name__}.")
         return super().draw_at(pos)
 
+    @cast_tensor_to_numpy
     def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
         """Add a new point cloud to visulize.
         
@@ -87,6 +89,7 @@ class PointScopeO3D(PointScopeScaffold):
         self.vis.add_geometry(self.current_pcd)
         return super().add_pcd(pcd_input, tsfm)
     
+    @cast_tensor_to_numpy
     def add_color(self, colors: np.ndarray):
         """Add color to current point cloud.
         
@@ -110,6 +113,7 @@ class PointScopeO3D(PointScopeScaffold):
         self.current_pcd.colors = o3d.utility.Vector3dVector(colors)
         return super().add_color(colors_input)
     
+    @cast_tensor_to_numpy
     def add_normal(self, normals: np.ndarray = None, normal_length_ratio: float = 0.05):
         """Add normals to current point cloud.
         
@@ -128,6 +132,7 @@ class PointScopeO3D(PointScopeScaffold):
         self.add_lines(start, end, color=[1, 0, 0])
         return super().add_normal(normals, normal_length_ratio)
     
+    @cast_tensor_to_numpy
     def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = [1, 0, 0], colors: np.ndarray = None):
         """Add arbitrary lines to visulize.
 
