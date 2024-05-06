@@ -172,3 +172,41 @@ class PointScopeScaffold(ABC):
         feat_tsne -= feat_tsne.min()
         feat_tsne /= feat_tsne.max()
         return self.add_color(feat_tsne)
+
+    def help(self):
+        message = """
+        #####################################################################################################################
+        add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray=None)
+            Args:
+                point_cloud (np.ndarray): (n, 3)
+                tsfm (np.ndarray): (4, 4) 
+        ---------------------------------------------------------------------------------------------------------------------
+        add_color(self, colors: np.ndarray):
+            Args:
+                color (np.ndarray): (n, 3)
+        ---------------------------------------------------------------------------------------------------------------------
+        add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list=[1, 0, 0], colors: np.ndarray=None):
+            Args:
+                starts (np.ndarray): (m, 3) 
+                ends (np.ndarray): (m, 3)
+                color (list, optional): (R, G, B). Defaults to [1, 0, 0].
+                colors (np.ndarray, optional): (m, 3). Defaults to None.
+        ---------------------------------------------------------------------------------------------------------------------
+        add_normal(self, normals: np.ndarray=None, normal_length_ratio: float=0.05):
+            Args:
+                normals (np.ndarray): (n, 3)
+        ---------------------------------------------------------------------------------------------------------------------
+        add_label(self, labels: np.ndarray):
+            Args:
+                labels (np.ndarray): (n)
+        ---------------------------------------------------------------------------------------------------------------------
+        add_pcd_from_file(self, file_path: str, format="auto"):
+        ---------------------------------------------------------------------------------------------------------------------
+        select_points(self, indices: np.ndarray):
+        ---------------------------------------------------------------------------------------------------------------------
+        add_feat(self, feat: np.ndarray):
+            Args:
+                feat (np.ndarray): (n, f)
+        #####################################################################################################################
+        """
+        print(message)
