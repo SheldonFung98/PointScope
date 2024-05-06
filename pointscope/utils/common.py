@@ -36,17 +36,20 @@ def load_pkl(path):
 def dump_pkl(path, data):
     with open(path, 'wb') as pickle_file:
         pickle.dump(data, pickle_file)
-        
-def tensor2numpy(*args):
+
+def tensor2numpy(*args, **kwargs):
     if TORCH_INSTALLED:
         args = list(args)
         for i in range(len(args)):
             if isinstance(args[i], torch.Tensor):
                 args[i] = args[i].cpu().detach().numpy()
-    return args
-
+        for key, value in kwargs.items():
+            if isinstance(value, torch.Tensor):
+                kwargs[key] = value.cpu().detach().numpy()
+    return args, kwargs
 
 def cast_tensor_to_numpy(func):
-    def wrapper(*args):
-        return func(*tensor2numpy(*args))
+    def wrapper(*args, **kwargs):
+        args, kwargs = tensor2numpy(*args, **kwargs)
+        return func(*args, **kwargs)
     return wrapper
