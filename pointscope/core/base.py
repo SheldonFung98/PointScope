@@ -6,7 +6,8 @@ from sklearn.manifold import TSNE
 from datetime import datetime
 from abc import ABC, abstractmethod
 from pathlib import Path
-from ..utils.common import load_pkl, dump_pkl
+from ..utils.common import load_pkl, dump_pkl, cast_tensor_to_numpy
+
 
 SUPPORTED_FILE_TYPE = [
     "xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"
@@ -141,6 +142,7 @@ class PointScopeScaffold(ABC):
         point_cloud = np.asarray(pcd.points)
         return self.add_pcd(point_cloud)
 
+    @cast_tensor_to_numpy
     def add_label(self, labels: np.ndarray):
         """
         Args:
@@ -155,11 +157,13 @@ class PointScopeScaffold(ABC):
         label_colors = np.array([random_color[label_mapper[each]] for each in labels])
         return self.add_color(label_colors)
     
+    @cast_tensor_to_numpy
     def select_points(self, indices: np.ndarray):
         labels = np.zeros((self.curr_pcd_np.shape[0]))
         labels[indices] = 1
         return self.add_label(labels)
     
+    @cast_tensor_to_numpy
     def add_feat(self, feat: np.ndarray):
         """Use T-SNE to visualize feature.
         
