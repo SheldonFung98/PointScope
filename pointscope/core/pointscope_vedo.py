@@ -99,9 +99,13 @@ class PointScopeVedo(PointScopeScaffold):
         return super().add_normal(normals, normal_length_ratio)
 
     @cast_tensor_to_numpy
-    def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = ..., colors: np.ndarray = None):
+    def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = [1, 0, 0], colors: np.ndarray = None):
+        assert starts.shape == ends.shape
         lines = Lines(Points(starts), Points(ends), alpha=0.5, lw=4)
-        
+
+        if colors is None:
+            colors = np.asarray([color for i in range(starts.shape[0])])
+            
         if colors.max() <= 1.0:
             colors = np.asarray(colors, dtype=np.float32) * 255
         lines.cell_individual_colors(colors)

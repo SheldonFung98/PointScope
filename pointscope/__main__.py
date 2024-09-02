@@ -13,9 +13,13 @@ parser.add_argument(
     help="Starts the external visualizer with the RPC interface"
 )
 parser.add_argument(
-    "--show",
+    "-show",
     nargs='+', default=list(),
     help="Ahow a list of point cloud from files. To manually force a format: pointcloud.txt:xyz"
+)
+parser.add_argument(
+    "-bg", default=[1, 1, 1],
+    help="set background color"
 )
 parser.add_argument(
     "--remote",
@@ -47,10 +51,10 @@ elif len(args.show):
     files_num = len(args.show)
     if args.remote:
         from pointscope import PointScopeClient as PSC
-        psc = PSC().vedo(subplot=files_num)
+        psc = PSC().vedo(subplot=files_num, bg_color=args.bg)
     else:
         from pointscope import PointScopeVedo as PSC
-        psc = PSC(subplot=files_num)
+        psc = PSC(subplot=files_num, bg_color=args.bg)
     for index, file_path in enumerate(args.show):
         file_path = file_path.split(":")
         file_path, force_format = file_path if len(file_path) == 2 else (file_path[0], "auto")
