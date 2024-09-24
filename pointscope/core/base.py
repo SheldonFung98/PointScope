@@ -9,9 +9,13 @@ from pathlib import Path
 from ..utils.common import load_pkl, dump_pkl, cast_tensor_to_numpy
 
 
-SUPPORTED_FILE_TYPE = [
-	"xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"
-]
+SUPPORTED_FILE_TYPE = {
+	# Point cloud
+	"pcd": ["xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"], 
+	# Mesh
+	"mesh": ["stl", "obj", "off", "gltf", "glb"]
+}
+
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 POINTSCOPE_SAVE_PATH = Path.home()/".pointscope"
 
@@ -134,13 +138,22 @@ class PointScopeScaffold(ABC):
 
 	def add_pcd_from_file(self, file_path: str, format="auto"):
 		file_extension = file_path.split(".")[-1]
-		if file_extension not in SUPPORTED_FILE_TYPE:
+
+		if file_extension in SUPPORTED_FILE_TYPE["pcd"]:
+			pass
+		elif file_extension in SUPPORTED_FILE_TYPE["mesh"]:
+			pass
+		else:
 			if format not in SUPPORTED_FILE_TYPE:
 				print(f"{file_extension} file type is not supported.")
 				return self
 		pcd = o3d.io.read_point_cloud(file_path, format=format)
 		point_cloud = np.asarray(pcd.points)
-		return self.add_pcd(point_cloud)
+		pcd_colors = np.asarray(pcd.colors)
+		self.add_pcd(point_cloud)
+		if pcd_colors.shape[0] == point_cloud.shape[0]:
+			self.add_color(pcd_colors)
+		return self
 
 	@cast_tensor_to_numpy
 	def add_label(self, labels: np.ndarray):

@@ -36,7 +36,8 @@ setup(
     url="https://github.com/SheldonVon98/PointScope",
     packages=find_packages(),
     install_requires=[
-        'numpy>=1.23.5',
+        # 'numpy>=1.23.5',
+        'numpy',
         'open3d>=0.10.0',
         'grpcio>=1.56.0',
         'protobuf>=3.20.0',
