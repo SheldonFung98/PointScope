@@ -13,8 +13,9 @@ message VisRequest {
         AddPointCloud   add_pcd         = 3;
         AddColor        add_color       = 4;
         AddLines        add_lines       = 5;
-        DrawAt          draw_at         = 6;
-        Save            save            = 7;
+        Hint            hint            = 6;
+        DrawAt          draw_at         = 7;
+        Save            save            = 8;
     }
 }
 
@@ -55,6 +56,12 @@ message AddLines {
     Matrix starts = 1;
     Matrix ends = 2;
     Matrix colors = 3;
+}
+
+message Hint {
+    string text = 1;
+    Matrix color = 2;
+    float scale = 3;
 }
 
 message Matrix {

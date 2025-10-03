@@ -40,7 +40,7 @@ setup(
         'open3d>=0.10.0',
         'grpcio>=1.56.0',
         'protobuf>=3.20.0',
-        'vedo>=2023.4.4',
+        'vedo==2025.5.3',
         'grpcio-tools'
     ],
     setup_requires=[

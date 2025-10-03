@@ -9,8 +9,11 @@ from pathlib import Path
 from ..utils.common import load_pkl, dump_pkl, cast_tensor_to_numpy
 
 
-SUPPORTED_FILE_TYPE = [
+SUPPORTED_PCD_FILE_TYPE = [
 	"xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"
+]
+SUPPORTED_MESH_FILE_TYPE = [
+	"obj"	
 ]
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 POINTSCOPE_SAVE_PATH = Path.home()/".pointscope"
@@ -59,7 +62,26 @@ class PointScopeScaffold(ABC):
 		if save_params:
 			self._params_io(operation="save")
 		return self
-	
+
+	@abstractmethod
+	def add_mesh(
+		self,
+		vertice: np.ndarray, 
+		triangles: np.ndarray, 
+		colors: np.array = None, 
+		normals: np.ndarray = None, 
+		tsfm: np.ndarray = None):
+		""" Add a new mesh to visulize.
+		Args:
+			vertice (np.ndarray): (n, 3)
+			triangles (np.ndarray): (m, 3)
+			colors (np.array): (n, 3)
+			normals (np.ndarray): (n, 3)
+			tsfm (np.ndarray, optional): (4, 4). Defaults to None.
+		"""
+		self._append_command("add_mesh", vertice=vertice, triangles=triangles, colors=colors, normals=normals, tsfm=tsfm)
+		return self
+
 	@abstractmethod
 	def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray=None):
 		"""Add a new point cloud to visulize.
@@ -91,7 +113,11 @@ class PointScopeScaffold(ABC):
 		self._append_command("add_color", colors=colors)
 		return self
 
-	
+	@abstractmethod
+	def hint(self, text: str, color=[0, 1, 0], scale=1.5):
+		self._append_command("hint", text=text, color=color, scale=scale)
+		return self
+
 	@abstractmethod
 	def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list=[1, 0, 0], colors: np.ndarray=None):
 		"""Add arbitrary lines to visulize.
@@ -132,15 +158,26 @@ class PointScopeScaffold(ABC):
 		self._append_command("draw_at", pos=pos)
 		return self
 
-	def add_pcd_from_file(self, file_path: str, format="auto"):
+	def add_pcd_from_file(self, file_path: str, tsfm: np.ndarray = None):
 		file_extension = file_path.split(".")[-1]
-		if file_extension not in SUPPORTED_FILE_TYPE:
-			if format not in SUPPORTED_FILE_TYPE:
-				print(f"{file_extension} file type is not supported.")
-				return self
-		pcd = o3d.io.read_point_cloud(file_path, format=format)
+		if file_extension not in SUPPORTED_PCD_FILE_TYPE:
+			print(f"{file_extension} file type is not supported.")
+			return self
+		pcd = o3d.io.read_point_cloud(file_path)
 		point_cloud = np.asarray(pcd.points)
-		return self.add_pcd(point_cloud)
+		return self.add_pcd(point_cloud, tsfm)
+
+	def add_mesh_from_file(self, file_path: str, tsfm: np.ndarray = None):
+		file_extension = file_path.split(".")[-1]
+		if file_extension not in SUPPORTED_MESH_FILE_TYPE:
+			print(f"{file_extension} file type is not supported.")
+			return self
+		mesh = o3d.io.read_triangle_mesh(file_path)
+		vertice = np.asarray(mesh.vertices)
+		triangles = np.asarray(mesh.triangles)
+		normals = np.asarray(mesh.vertex_normals) if mesh.has_vertex_normals() else None
+		colors = np.asarray(mesh.vertex_colors) if mesh.has_vertex_colors() else None
+		return self.add_mesh(vertice, triangles, colors, normals, tsfm)
 
 	@cast_tensor_to_numpy
 	def add_label(self, labels: np.ndarray):
@@ -198,9 +235,7 @@ class PointScopeScaffold(ABC):
 		if show_vertices:
 			self.add_pcd(vertices.reshape(-1, 3))
 		
-		return self.add_lines(*vertices[:, lines.T].transpose(1, 0, 2, 3).reshape(2, -1, 3), colors=color)
-
-
+		return self.add_lines(*vertices[:, lines.T].transpose(1, 0, 2, 3).reshape(2, -1, 3), color=color)
 
 	def help(self):
 		message = """

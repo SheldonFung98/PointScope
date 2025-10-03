@@ -51,6 +51,12 @@ class PointScopeRunner:
             ends=protoMatrix2np(request.add_lines.ends),
             colors=protoMatrix2np(request.add_lines.colors))
 
+    def hint(self, request):
+        self.psdelegator.hint(
+            text=request.hint.text,
+            color=protoMatrix2np(request.hint.color),
+            scale=request.hint.scale)
+
 
 class PointScopeServicer(pointscope_pb2_grpc.PointScopeServicer):
     

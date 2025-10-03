@@ -13,6 +13,12 @@ parser.add_argument(
     help="Starts the external visualizer with the RPC interface"
 )
 parser.add_argument(
+    "-backend",
+    type=str,
+    default="vedo",
+    help="Visualizer backend. Default: vedo"
+)
+parser.add_argument(
     "-show",
     nargs='+', default=list(),
     help="Ahow a list of point cloud from files. To manually force a format: pointcloud.txt:xyz"
@@ -49,16 +55,27 @@ if args.server:
 
 elif len(args.show):
     files_num = len(args.show)
+    assert args.backend in ["vedo", "o3d"], f"Backend {args.backend} not supported."
     if args.remote:
         from pointscope import PointScopeClient as PSC
-        psc = PSC().vedo(subplot=files_num, bg_color=args.bg)
+        if args.backend == "vedo":
+            psc = PSC().vedo(subplot=files_num, bg_color=args.bg)
+        else:
+            psc = PSC().o3d(subplot=files_num, bg_color=args.bg)
     else:
-        from pointscope import PointScopeVedo as PSC
+        if args.backend == "vedo":
+            from pointscope import PointScopeVedo as PSC
+        else:
+            from pointscope import PointScopeO3D as PSC
         psc = PSC(subplot=files_num, bg_color=args.bg)
+
     for index, file_path in enumerate(args.show):
         file_path = file_path.split(":")
         file_path, force_format = file_path if len(file_path) == 2 else (file_path[0], "auto")
-        psc.draw_at(index).add_pcd_from_file(file_path, force_format)
+        # psc.draw_at(index).add_pcd_from_file(file_path, force_format)
+        psc.draw_at(index).add_pcd_from_file(file_path)
+        print(f"Drawing {file_path} at {index}.")
+        # psc.add_mesh_from_file(file_path)
     psc.show()
 
 elif args.load:
