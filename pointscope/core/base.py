@@ -15,6 +15,13 @@ SUPPORTED_PCD_FILE_TYPE = [
 SUPPORTED_MESH_FILE_TYPE = [
 	"obj"	
 ]
+SUPPORTED_FILE_TYPE = {
+	# Point cloud
+	"pcd": ["xyz", "xyzn", "xyzrgb", "pts", "ply", "pcd"], 
+	# Mesh
+	"mesh": ["stl", "obj", "off", "gltf", "glb"]
+}
+
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 POINTSCOPE_SAVE_PATH = Path.home()/".pointscope"
 
