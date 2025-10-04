@@ -1,32 +1,23 @@
-import grpc
+import json
+import urllib.request
+import urllib.parse
 from .base import PointScopeScaffold
-from ..protos import pointscope_pb2_grpc
-from ..protos import pointscope_pb2
-from ..utils.common import np2protoMatrix, cast_tensor_to_numpy
+from ..utils.common import np2jsonMatrix, cast_tensor_to_numpy
 import numpy as np
 import logging
 
-MAX_MESSAGE_LENGTH = 100*1024*1024
-
 class PointScopeClient(PointScopeScaffold):
 	
-	def __init__(self, ip="0.0.0.0", port="50051") -> None:
+	def __init__(self, ip="0.0.0.0", port=50051) -> None:
 		self.request_pool = list()
-		channel = grpc.insecure_channel(
-			f'{ip}:{port}',
-			options=[
-				('grpc.max_send_message_length', MAX_MESSAGE_LENGTH),
-				('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH),
-			],
-		)
-		self.stub = pointscope_pb2_grpc.PointScopeStub(channel)
+		self.server_url = f"http://{ip}:{port}/visualization_session"
 
 	def __del__(self):
 		self.request_pool.clear()
 
 	@staticmethod
 	def _is_init(r):
-		return r.HasField("vedo_init") or r.HasField("o3d_init")
+		return "vedo_init" in r or "o3d_init" in r
 	  
 	def append_request(self, request):
 		if len(self.request_pool):
@@ -42,83 +33,76 @@ class PointScopeClient(PointScopeScaffold):
 			self.request_pool.append(request)
 	
 	def vedo(self, bg_color=[0.5, 0.5, 0.5], window_name=None, subplot=1):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				vedo_init=pointscope_pb2.VedoInit(
-					window_name=window_name,
-					bg_color=np2protoMatrix(bg_color),
-					subplot=subplot,
-				)
-			)
-		)
+		request = {
+			"vedo_init": {
+				"window_name": window_name,
+				"bg_color": np2jsonMatrix(bg_color),
+				"subplot": subplot,
+			}
+		}
+		self.append_request(request)
 		return self
 	
 	def o3d(self, show_coor=True, bg_color=[0.5, 0.5, 0.5], window_name=None):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				o3d_init=pointscope_pb2.O3DInit(
-					show_coor=show_coor,
-					bg_color=np2protoMatrix(bg_color),
-					window_name=window_name
-				)
-			)
-		)
+		request = {
+			"o3d_init": {
+				"show_coor": show_coor,
+				"bg_color": np2jsonMatrix(bg_color),
+				"window_name": window_name
+			}
+		}
+		self.append_request(request)
 		return self
 
 	def save(self, file_name=None, save_local=False):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				save=pointscope_pb2.Save(
-					file_name=file_name,
-				)
-			)
-		)
+		request = {
+			"save": {
+				"file_name": file_name,
+			}
+		}
+		self.append_request(request)
 		return self
 
 	def draw_at(self, pos: int):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				draw_at=pointscope_pb2.DrawAt(
-					pos=pos
-				)
-			)
-		)
+		request = {
+			"draw_at": {
+				"pos": pos
+			}
+		}
+		self.append_request(request)
 		return self
 
 	@cast_tensor_to_numpy
 	def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				add_pcd=pointscope_pb2.AddPointCloud(
-					pcd=np2protoMatrix(point_cloud),
-					tsfm=np2protoMatrix(tsfm)
-				)
-			)
-		)
+		request = {
+			"add_pcd": {
+				"pcd": np2jsonMatrix(point_cloud),
+				"tsfm": np2jsonMatrix(tsfm)
+			}
+		}
+		self.append_request(request)
 		return self
 	
 	@cast_tensor_to_numpy
 	def add_color(self, colors: np.ndarray):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				add_color=pointscope_pb2.AddColor(
-					colors=np2protoMatrix(colors),
-				)
-			)
-		)
+		request = {
+			"add_color": {
+				"colors": np2jsonMatrix(colors),
+			}
+		}
+		self.append_request(request)
 		return self
 	
 	@cast_tensor_to_numpy
 	def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = [], colors: np.ndarray = None):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				add_lines=pointscope_pb2.AddLines(
-					starts=np2protoMatrix(starts),
-					ends=np2protoMatrix(ends),
-					colors=np2protoMatrix(colors),
-				)
-			)
-		)
+		request = {
+			"add_lines": {
+				"starts": np2jsonMatrix(starts),
+				"ends": np2jsonMatrix(ends),
+				"colors": np2jsonMatrix(colors),
+			}
+		}
+		self.append_request(request)
 		return self
 	
 	@cast_tensor_to_numpy
@@ -127,37 +111,50 @@ class PointScopeClient(PointScopeScaffold):
 
 	@cast_tensor_to_numpy
 	def add_mesh(self, vertices: np.ndarray, triangles: np.ndarray, colors: np.ndarray=None, normals: np.ndarray=None, tsfm: np.ndarray=None):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				add_mesh=pointscope_pb2.AddMesh(
-					vertices=np2protoMatrix(vertices),
-					triangles=np2protoMatrix(triangles),
-					colors=np2protoMatrix(colors),
-					normals=np2protoMatrix(normals),
-					tsfm=np2protoMatrix(tsfm)
-				)
-			)
-		)
+		request = {
+			"add_mesh": {
+				"vertices": np2jsonMatrix(vertices),
+				"triangles": np2jsonMatrix(triangles),
+				"colors": np2jsonMatrix(colors),
+				"normals": np2jsonMatrix(normals),
+				"tsfm": np2jsonMatrix(tsfm)
+			}
+		}
+		self.append_request(request)
 		return self
 
 	def hint(self, text: str, color: list=[0, 1, 0], scale: float=1.5):
-		self.append_request(
-			pointscope_pb2.VisRequest(
-				hint=pointscope_pb2.Hint(
-					text=text,
-					color=np2protoMatrix(color),
-					scale=scale,
-				)
-			)
-		)
+		request = {
+			"hint": {
+				"text": text,
+				"color": np2jsonMatrix(color),
+				"scale": scale,
+			}
+		}
+		self.append_request(request)
 		return self
 
 	def show(self):
 		try:
-			response = self.stub.VisualizationSession(iter(self.request_pool))
-			status = "ok" if response.status.ok else "failed"
-			print(f"Visualization session: {status}.")
-		except grpc._channel._InactiveRpcError:
-			print("Failed to connect to server.")
+			# Prepare JSON data
+			json_data = {"requests": self.request_pool}
+			data = json.dumps(json_data).encode('utf-8')
+			
+			# Create HTTP request
+			req = urllib.request.Request(
+				self.server_url,
+				data=data,
+				headers={'Content-Type': 'application/json'}
+			)
+			
+			# Send request and get response
+			with urllib.request.urlopen(req) as response:
+				response_data = json.loads(response.read().decode('utf-8'))
+				status = "ok" if response_data.get("status", {}).get("ok", False) else "failed"
+				print(f"Visualization session: {status}.")
+		except urllib.error.URLError as e:
+			print(f"Failed to connect to server: {e}")
+		except Exception as e:
+			print(f"Error during visualization: {e}")
 		finally:
 			return super().show(save_params=False)

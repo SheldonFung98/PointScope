@@ -18,7 +18,6 @@ It provides:
 * Numpy 
 * Open3D
 * vedo
-* grpc
 
 ## Installation
 Use conda environment (optional)

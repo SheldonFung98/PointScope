@@ -1,7 +1,6 @@
-from pointscope.protos import pointscope_pb2, pointscope_pb2_grpc
 from .pointscope_vedo import PointScopeVedo as PS_Vedo
 from .pointscope_o3d import PointScopeO3D as PS_O3D
-from ..utils.common import protoMatrix2np
+from ..utils.common import jsonMatrix2np
 from multiprocessing import Process
 import logging
 
@@ -17,70 +16,82 @@ class PointScopeRunner:
 
     def vedo_init(self, request):
         self.psdelegator = PS_Vedo(
-            window_name=request.vedo_init.window_name,
-            bg_color=protoMatrix2np(request.vedo_init.bg_color),
-            subplot=request.vedo_init.subplot)
+            window_name=request["window_name"],
+            bg_color=jsonMatrix2np(request["bg_color"]),
+            subplot=request["subplot"])
     
     def o3d_init(self, request):
         self.psdelegator = PS_O3D(
-            show_coor=request.o3d_init.show_coor,
-            bg_color=protoMatrix2np(request.o3d_init.bg_color),
-            window_name=request.o3d_init.window_name)
+            show_coor=request["show_coor"],
+            bg_color=jsonMatrix2np(request["bg_color"]),
+            window_name=request["window_name"])
 
     def save(self, request):
-        file_name = request.save.file_name
+        file_name = request["file_name"]
         file_name = file_name if file_name else None
         self.psdelegator.save(
             file_name=file_name)
 
     def draw_at(self, request):
         self.psdelegator.draw_at(
-            pos=request.draw_at.pos)
+            pos=request["pos"])
         
     def add_pcd(self, request):
         self.psdelegator.add_pcd(
-            point_cloud=protoMatrix2np(request.add_pcd.pcd),
-            tsfm=protoMatrix2np(request.add_pcd.tsfm))
+            point_cloud=jsonMatrix2np(request["pcd"]),
+            tsfm=jsonMatrix2np(request["tsfm"]))
         
     def add_color(self, request):
-        self.psdelegator.add_color(colors=protoMatrix2np(request.add_color.colors))
+        self.psdelegator.add_color(colors=jsonMatrix2np(request["colors"]))
         
     def add_lines(self, request):
         self.psdelegator.add_lines(
-            starts=protoMatrix2np(request.add_lines.starts),
-            ends=protoMatrix2np(request.add_lines.ends),
-            colors=protoMatrix2np(request.add_lines.colors))
+            starts=jsonMatrix2np(request["starts"]),
+            ends=jsonMatrix2np(request["ends"]),
+            colors=jsonMatrix2np(request["colors"]))
+
+    def add_mesh(self, request):
+        self.psdelegator.add_mesh(
+            vertices=jsonMatrix2np(request["vertices"]),
+            triangles=jsonMatrix2np(request["triangles"]),
+            colors=jsonMatrix2np(request["colors"]),
+            normals=jsonMatrix2np(request["normals"]),
+            tsfm=jsonMatrix2np(request["tsfm"]))
 
     def hint(self, request):
         self.psdelegator.hint(
-            text=request.hint.text,
-            color=protoMatrix2np(request.hint.color),
-            scale=request.hint.scale)
+            text=request["text"],
+            color=jsonMatrix2np(request["color"]),
+            scale=request["scale"])
 
 
-class PointScopeServicer(pointscope_pb2_grpc.PointScopeServicer):
+class PointScopeServicer:
     
     def __init__(self) -> None:
-        super().__init__()
+        pass
 
-    def VisualizationSession(self, request_iterator, context):
+    def visualization_session(self, request_data):
+        """Process visualization session from JSON request data."""
         logging.info("Visualization session.")
         logging.info("Receiving commands...")
         req_queue = list()
-        for request in request_iterator:
-            field_name = request.ListFields()[0][0].name
+        
+        # Extract requests from JSON data
+        requests = request_data.get("requests", [])
+        
+        for request in requests:
+            # Find the field name (key) and its data
+            field_name = list(request.keys())[0]
             command = "{}{}".format(
                 "" if field_name.endswith("init") else " -> ", 
                 field_name
             )
             print(command, end="", flush=True)
-            req_queue.append({"name": field_name, "action": request})
-
-        print("\nDone.")
-        logging.info("Start visualization.")
+            req_queue.append({"name": field_name, "action": request[field_name]})
+        logging.info("Done. Start visualization.")
         p = Process(target=PointScopeRunner, args=(req_queue, ))
         p.start()
         p.join()
-        return pointscope_pb2.VisResponse(
-            status=pointscope_pb2.Status(ok=True)
-        )
+        return {
+            "status": {"ok": True}
+        }
