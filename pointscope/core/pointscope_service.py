@@ -50,6 +50,11 @@ class PointScopeRunner:
             ends=jsonMatrix2np(request["ends"]),
             colors=jsonMatrix2np(request["colors"]))
 
+    def add_label(self, request):
+        self.psdelegator.add_label(
+            labels=jsonMatrix2np(request["labels"]),
+        )
+
     def add_mesh(self, request):
         self.psdelegator.add_mesh(
             vertices=jsonMatrix2np(request["vertices"]),

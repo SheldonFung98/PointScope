@@ -33,111 +33,121 @@ class PointScopeClient(PointScopeScaffold):
 			self.request_pool.append(request)
 	
 	def vedo(self, bg_color=[0.5, 0.5, 0.5], window_name=None, subplot=1):
-		request = {
-			"vedo_init": {
-				"window_name": window_name,
-				"bg_color": np2jsonMatrix(bg_color),
-				"subplot": subplot,
-			}
-		}
+		request = dict(
+			vedo_init=dict(
+				window_name=window_name,
+				bg_color=np2jsonMatrix(bg_color),
+				subplot=subplot,
+			)
+		)
 		self.append_request(request)
 		return self
 	
 	def o3d(self, show_coor=True, bg_color=[0.5, 0.5, 0.5], window_name=None):
-		request = {
-			"o3d_init": {
-				"show_coor": show_coor,
-				"bg_color": np2jsonMatrix(bg_color),
-				"window_name": window_name
-			}
-		}
+		request = dict(
+			o3d_init=dict(
+				show_coor=show_coor,
+				bg_color=np2jsonMatrix(bg_color),
+				window_name=window_name
+			)
+		)
 		self.append_request(request)
 		return self
 
 	def save(self, file_name=None, save_local=False):
-		request = {
-			"save": {
-				"file_name": file_name,
-			}
-		}
+		request = dict(
+			save=dict(
+				file_name=file_name,
+			)
+		)
 		self.append_request(request)
 		return self
 
 	def draw_at(self, pos: int):
-		request = {
-			"draw_at": {
-				"pos": pos
-			}
-		}
+		request = dict(
+			draw_at=dict(
+				pos=pos
+			)
+		)
 		self.append_request(request)
 		return self
 
 	@cast_tensor_to_numpy
 	def add_pcd(self, point_cloud: np.ndarray, tsfm: np.ndarray = None):
-		request = {
-			"add_pcd": {
-				"pcd": np2jsonMatrix(point_cloud),
-				"tsfm": np2jsonMatrix(tsfm)
-			}
-		}
+		request = dict(
+			add_pcd=dict(
+				pcd=np2jsonMatrix(point_cloud),
+				tsfm=np2jsonMatrix(tsfm)
+			)
+		)
 		self.append_request(request)
 		return self
 	
 	@cast_tensor_to_numpy
 	def add_color(self, colors: np.ndarray):
-		request = {
-			"add_color": {
-				"colors": np2jsonMatrix(colors),
-			}
-		}
+		request = dict(
+			add_color=dict(
+				colors=np2jsonMatrix(colors),
+			)
+		)
 		self.append_request(request)
 		return self
 	
 	@cast_tensor_to_numpy
-	def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = [], colors: np.ndarray = None):
-		request = {
-			"add_lines": {
-				"starts": np2jsonMatrix(starts),
-				"ends": np2jsonMatrix(ends),
-				"colors": np2jsonMatrix(colors),
-			}
-		}
+	def add_label(self, labels: np.ndarray):
+		request = dict(
+			add_label=dict(
+				labels=np2jsonMatrix(labels),
+			)
+		)
 		self.append_request(request)
 		return self
-	
+
+	@cast_tensor_to_numpy
+	def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = [], colors: np.ndarray = None):
+		request = dict(
+			add_lines=dict(
+				starts=np2jsonMatrix(starts),
+				ends=np2jsonMatrix(ends),
+				colors=np2jsonMatrix(colors),
+			)
+		)
+		self.append_request(request)
+		return self
+
 	@cast_tensor_to_numpy
 	def add_normal(self, normals: np.ndarray=None, normal_length_ratio: float=0.05):
 		return self
 
 	@cast_tensor_to_numpy
 	def add_mesh(self, vertices: np.ndarray, triangles: np.ndarray, colors: np.ndarray=None, normals: np.ndarray=None, tsfm: np.ndarray=None):
-		request = {
-			"add_mesh": {
-				"vertices": np2jsonMatrix(vertices),
-				"triangles": np2jsonMatrix(triangles),
-				"colors": np2jsonMatrix(colors),
-				"normals": np2jsonMatrix(normals),
-				"tsfm": np2jsonMatrix(tsfm)
-			}
-		}
+		request = dict(
+			add_mesh=dict(
+				vertices=np2jsonMatrix(vertices),
+				triangles=np2jsonMatrix(triangles),
+				colors=np2jsonMatrix(colors),
+				normals=np2jsonMatrix(normals),
+				tsfm=np2jsonMatrix(tsfm)
+			)
+		)
 		self.append_request(request)
 		return self
 
 	def hint(self, text: str, color: list=[0, 1, 0], scale: float=1.5):
-		request = {
-			"hint": {
-				"text": text,
-				"color": np2jsonMatrix(color),
-				"scale": scale,
-			}
-		}
+		request = dict(
+			hint=dict(
+				text=text,
+				color=np2jsonMatrix(color),
+				scale=scale,
+			)
+		)
 		self.append_request(request)
 		return self
 
 	def show(self):
 		try:
 			# Prepare JSON data
-			json_data = {"requests": self.request_pool}
+			json_data = dict(requests=self.request_pool)
 			data = json.dumps(json_data).encode('utf-8')
 			
 			# Create HTTP request
