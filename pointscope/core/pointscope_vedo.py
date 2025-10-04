@@ -97,27 +97,27 @@ class PointScopeVedo(PointScopeScaffold):
 	
 	@cast_tensor_to_numpy
 	def add_color(self, colors: np.ndarray):
-		# """Add color to current point cloud.
+		"""Add color to current point cloud.
 		
-		# color should match the shape of the current focused 
-		# point cloud. Random color will be added to the point
-		# cloud if color is not specified.
+		color should match the shape of the current focused 
+		point cloud. Random color will be added to the point
+		cloud if color is not specified.
 
-		# Args:
-		# 	color (np.ndarray): (n, 3)
-		# """
-		# colors_input = colors.copy()
-		# if self.current_pcd is None:
-		# 	print("No current operating point cloud.")
-		# 	return super().add_color(colors_input)
+		Args:
+			color (np.ndarray): (n, 3)
+		"""
+		colors_input = colors.copy()
+		if self.current_pcd is None:
+			print("No current operating point cloud.")
+			return super().add_color(colors_input)
 		
-		# color_channel = colors.shape[1]
-		# groups = int(self.current_pcd.ncells / self.curr_pcd_np.shape[0])
+		color_channel = colors.shape[1]
+		groups = int(self.current_pcd.ncells / self.curr_pcd_np.shape[0])
 		
-		# colors = self.scale_color(colors)
-		# colors = colors[:, None, :].repeat(groups, 1).reshape(-1, color_channel)
-		# self.current_pcd.cellIndividualColors(colors)
-		# return super().add_color(colors_input)
+		colors = self.scale_color(colors)
+		colors = colors[:, None, :].repeat(groups, 1).reshape(-1, color_channel)
+		self.current_pcd.cellcolors = colors
+		return super().add_color(colors_input)
 		return self
 
 	@cast_tensor_to_numpy

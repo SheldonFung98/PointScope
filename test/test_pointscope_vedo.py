@@ -10,8 +10,9 @@ PointScopeVedo(2) \
 	.add_pcd(torus) \
 	.draw_at(1) \
 	.hint("1")\
-	.add_pcd(sphere, color=np.random.random(sphere.shape)) \
+	.add_pcd(sphere, colors=np.random.random(sphere.shape)) \
 	.show()#.save()
 
+	# .add_color(np.random.random(sphere.shape)) \
 	# .add_color(np.random.random(sphere.shape)) \
 	# .add_lines(np.random.random((10, 3)), np.random.random((10, 3)))\

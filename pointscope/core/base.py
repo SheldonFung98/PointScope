@@ -103,7 +103,7 @@ class PointScopeScaffold(ABC):
 		"""
 		self._append_command("add_pcd", point_cloud=point_cloud, tsfm=tsfm)
 		self.curr_pcd_np = point_cloud
-		self.add_color(np.zeros_like(point_cloud)+[random.random() for _ in range(3)])
+		# self.add_color(np.zeros_like(point_cloud)+[random.random() for _ in range(3)])
 		return self
 
 	@abstractmethod
