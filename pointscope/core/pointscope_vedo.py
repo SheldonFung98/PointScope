@@ -135,12 +135,12 @@ class PointScopeVedo(PointScopeScaffold):
 	@cast_tensor_to_numpy
 	def add_lines(self, starts: np.ndarray, ends: np.ndarray, color: list = [1, 0, 0], colors: np.ndarray = None):
 		assert starts.shape == ends.shape
-		lines = Lines(Points(starts), Points(ends), alpha=0.5, lw=4, c=color)
 		if colors is None:
 			colors = np.asarray([color for i in range(starts.shape[0])])
 			
 		colors = self.scale_color(colors)
-		# lines.cell_individual_colors(colors)
+		lines = Lines(Points(starts), Points(ends), alpha=0.5, lw=4, c=color)
+		lines.cellcolors = colors
 		self.plt.add(lines)
 		return super().add_lines(starts, ends, color, colors)
 
